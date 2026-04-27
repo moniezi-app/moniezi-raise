@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "moniezi-investor-portal-v1",
+  "company": {
+    "legalName": "EMYRGEN GROUP INC.",
+    "stateOfIncorporation": "Wyoming",
+    "slug": "emyrgen-group",
+    "issuerName": "Eli Green",
+    "adminEmail": "issuer@example.com"
+  },
+  "package": {
+    "token": "sample-token-123",
+    "title": "Private Investment Reservation",
+    "preparedFor": "John Smith",
+    "investorName": "John Smith",
+    "email": "john@example.com",
+    "phone": "",
+    "entityName": "",
+    "desiredAmount": 25000,
+    "instrumentType": "common_stock",
+    "minimumInvestment": 5000,
+    "pricePerShare": 0.25,
+    "estimatedShares": 100000,
+    "expirationDate": "2026-12-31",
+    "privateMessage": "Please review this private indication-of-interest package.",
+    "offeringSummary": "This is a private indication of interest for invited contacts only.",
+    "majorTerms": "Indication amount: $25,000.\nInstrument: Common stock.\nThis is not final company acceptance and does not issue shares.",
+    "riskText": "Private-company investments are speculative and involve risk."
+  }
+}

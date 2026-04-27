@@ -1,0 +1,16 @@
+name = "moniezi-investor-portal"
+main = "src/worker.js"
+compatibility_date = "2026-04-26"
+
+# Replace with your real custom domain route when ready.
+# routes = [{ pattern = "invest.yourdomain.com/*", custom_domain = true }]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "moniezi_investor_portal"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+[vars]
+PORTAL_BRAND_NAME = "MONIEZI Investor Portal"
+ALLOWED_ORIGIN = "*"
+# Set ADMIN_SECRET with: wrangler secret put ADMIN_SECRET
