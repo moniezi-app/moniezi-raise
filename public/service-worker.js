@@ -4,10 +4,10 @@
 */
 
 // Bump this on every deploy
-// MONIEZI Raise V1.1: standalone signup portal cache refresh.
+// MONIEZI Raise V1.2.1: dark-mode selected-tab/action-button hotfix cache refresh.
 // The previous "no precache" change prevented the app shell from being available
 // when offline at cold start.
-const CACHE_VERSION = "moniezi-raise-v1-1-cache-2026-05-01";
+const CACHE_VERSION = "moniezi-raise-v1-2-1-dark-mode-hotfix-2026-05-08";
 const CACHE_NAME = `moniezi-cache-${CACHE_VERSION}`;
 
 // Resolve an asset relative to the service worker scope

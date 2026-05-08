@@ -570,7 +570,7 @@ function App() {
             <button
               key={key}
               onClick={() => setView(key)}
-              className={`flex items-center justify-center gap-2 rounded-2xl px-3 py-3 text-sm font-black transition active:scale-95 ${view === key ? 'bg-slate-950 text-white shadow-lg dark:bg-white dark:text-slate-950' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/10'}`}
+              className={`flex items-center justify-center gap-2 rounded-2xl px-3 py-3 text-sm font-black transition active:scale-95 ${view === key ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20 dark:bg-blue-500 dark:text-white dark:shadow-blue-950/30' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/10'}`}
             >
               <Icon className="h-4 w-4" />
               {label}
@@ -613,7 +613,7 @@ function App() {
                   <div className="md:col-span-2"><Field label="Company address"><textarea className={`${inputBase} min-h-[92px]`} value={settings.companyAddress} onChange={(e) => updateSettings({ companyAddress: e.target.value })} /></Field></div>
                 </div>
                 <div className="mt-5 flex flex-wrap gap-3">
-                  <button onClick={exportProfile} className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg active:scale-95 dark:bg-white dark:text-slate-950"><Download className="h-4 w-4" /> Export Profile</button>
+                  <button onClick={exportProfile} className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-900/20 active:scale-95 dark:bg-blue-500 dark:text-white dark:shadow-blue-950/30"><Download className="h-4 w-4" /> Export Profile</button>
                   <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-950 shadow-lg active:scale-95 dark:border-white/10 dark:bg-slate-950 dark:text-white">
                     <Upload className="h-4 w-4" /> Import Pro Profile
                     <input type="file" accept="application/json" className="hidden" onChange={(e) => importProfile(e.target.files?.[0])} />
@@ -746,7 +746,7 @@ function App() {
                         <p><strong>Qualification:</strong> {form.accreditedStatus || 'Not entered'}</p>
                       </div>
                     </div>
-                    <button onClick={() => downloadPackage(form)} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-base font-black text-white shadow-xl active:scale-95 dark:bg-white dark:text-slate-950">
+                    <button onClick={() => downloadPackage(form)} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-4 text-base font-black text-white shadow-xl shadow-blue-900/20 active:scale-95 dark:bg-blue-500 dark:text-white dark:shadow-blue-950/30">
                       <Download className="h-5 w-5" /> Download Investor Package
                     </button>
                     <div className="space-y-3">
@@ -770,7 +770,7 @@ function App() {
 
                 <div className="mt-6 flex items-center justify-between border-t border-slate-200 pt-5 dark:border-white/10">
                   <button disabled={step === 0} onClick={() => setStep((prev) => Math.max(0, prev - 1))} className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-black text-slate-900 disabled:opacity-40 dark:border-white/10 dark:text-white"><ArrowLeft className="h-4 w-4" /> Back</button>
-                  <button disabled={step === steps.length - 1} onClick={() => setStep((prev) => Math.min(steps.length - 1, prev + 1))} className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white disabled:opacity-40 dark:bg-white dark:text-slate-950">Next <ArrowRight className="h-4 w-4" /></button>
+                  <button disabled={step === steps.length - 1} onClick={() => setStep((prev) => Math.min(steps.length - 1, prev + 1))} className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-black text-white shadow-lg shadow-blue-900/20 disabled:opacity-40 dark:bg-blue-500 dark:text-white dark:shadow-blue-950/30">Next <ArrowRight className="h-4 w-4" /></button>
                 </div>
               </SectionCard>
             </div>
@@ -779,7 +779,7 @@ function App() {
           {view === 'submissions' && (
             <SectionCard title="Investor Submissions" eyebrow="Owner tracking">
               <div className="mb-5 flex flex-wrap gap-3">
-                <button onClick={exportSubmissionsCsv} className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg active:scale-95 dark:bg-white dark:text-slate-950"><Download className="h-4 w-4" /> Export CSV</button>
+                <button onClick={exportSubmissionsCsv} className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-900/20 active:scale-95 dark:bg-blue-500 dark:text-white dark:shadow-blue-950/30"><Download className="h-4 w-4" /> Export CSV</button>
                 <button onClick={() => downloadTextFile('moniezi-raise-submissions.json', JSON.stringify(submissions, null, 2), 'application/json;charset=utf-8')} className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-950 shadow-lg active:scale-95 dark:border-white/10 dark:bg-slate-950 dark:text-white"><Download className="h-4 w-4" /> Export JSON</button>
               </div>
               <div className="grid gap-4">
@@ -802,7 +802,7 @@ function App() {
                         <select className={inputBase} value={item.status} onChange={(e) => setSubmissionStatus(item.id, e.target.value as SubmissionStatus)}>
                           {['submitted', 'reviewing', 'accepted', 'declined', 'funded'].map((status) => <option key={status}>{status}</option>)}
                         </select>
-                        <button onClick={() => downloadPackage(item)} className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white active:scale-95 dark:bg-white dark:text-slate-950">Download Package</button>
+                        <button onClick={() => downloadPackage(item)} className="rounded-2xl bg-blue-600 px-4 py-3 text-sm font-black text-white shadow-lg shadow-blue-900/20 active:scale-95 dark:bg-blue-500 dark:text-white dark:shadow-blue-950/30">Download Package</button>
                       </div>
                     </div>
                   </div>
@@ -871,7 +871,7 @@ function App() {
             ['package', FileText, 'Docs'],
             ['guide', ShieldCheck, 'Guide'],
           ] as const).map(([key, Icon, label]) => (
-            <button key={key} onClick={() => setView(key)} className={`rounded-2xl px-2 py-2 text-[11px] font-black ${view === key ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950' : 'text-slate-700 dark:text-slate-200'}`}>
+            <button key={key} onClick={() => setView(key)} className={`rounded-2xl px-2 py-2 text-[11px] font-black ${view === key ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20 dark:bg-blue-500 dark:text-white dark:shadow-blue-950/30' : 'text-slate-700 dark:text-slate-200'}`}>
               <Icon className="mx-auto h-5 w-5" />
               <span className="mt-1 block">{label}</span>
             </button>
