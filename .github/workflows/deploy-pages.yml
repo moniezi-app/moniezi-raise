@@ -1,6 +1,6 @@
-# package marker: moniezi-raise-v1 repo alignment
+# package marker: moniezi-raise-v1 standalone signup
 name: Deploy Vite app to GitHub Pages
-# package-revision: moniezi-raise-v1
+# package-revision: moniezi-raise-v1-1
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Static checks + regression tests
+      - name: Static checks
         run: npm run check
 
   build:

@@ -4,10 +4,10 @@
 */
 
 // Bump this on every deploy
-// v15.1.4: restore safe precache so iOS A2HS can launch offline on FIRST open.
+// MONIEZI Raise V1.1: standalone signup portal cache refresh.
 // The previous "no precache" change prevented the app shell from being available
 // when offline at cold start.
-const CACHE_VERSION = "moniezi-raise-v1-cache-2026-04-26";
+const CACHE_VERSION = "moniezi-raise-v1-1-cache-2026-05-01";
 const CACHE_NAME = `moniezi-cache-${CACHE_VERSION}`;
 
 // Resolve an asset relative to the service worker scope

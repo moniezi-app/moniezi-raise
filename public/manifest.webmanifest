@@ -1,7 +1,7 @@
 {
   "name": "MONIEZI Raise",
   "short_name": "MZ Raise",
-  "description": "MONIEZI Raise — private investor package and reservation portal",
+  "description": "MONIEZI Raise — standalone private investor signup, reservation, and package portal",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
