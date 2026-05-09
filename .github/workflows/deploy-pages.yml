@@ -1,6 +1,6 @@
-# package marker: moniezi-raise-v1 standalone signup
+# package marker: moniezi-raise-v1-5 premium investor portal builder
 name: Deploy Vite app to GitHub Pages
-# package-revision: moniezi-raise-v1-1
+# package-revision: moniezi-raise-v1-5
 
 on:
   push:

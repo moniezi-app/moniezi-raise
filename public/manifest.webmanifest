@@ -1,7 +1,7 @@
 {
   "name": "MONIEZI Raise",
   "short_name": "Raise",
-  "description": "MONIEZI Raise \u2014 premium mobile investor portal builder, supporter signup, and investor package workflow.",
+  "description": "MONIEZI Raise \u2014 premium investor portal builder for private funding pages, agreement downloads, and owner-led investor interest intake.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -94,5 +94,5 @@
       "purpose": "maskable"
     }
   ],
-  "id": "./moniezi-raise"
+  "id": "./moniezi-raise-v1-5"
 }

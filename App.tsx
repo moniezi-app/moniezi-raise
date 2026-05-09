@@ -1,40 +1,29 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowRight,
   BadgeDollarSign,
-  BriefcaseBusiness,
   Building2,
   CheckCircle2,
-  ClipboardCheck,
+  ClipboardList,
   Download,
   Eye,
   FileText,
-  Globe2,
-  Handshake,
   Landmark,
   Mail,
-  PackageCheck,
-  Phone,
+  PenLine,
   Rocket,
   Save,
-  Send,
-  Settings,
   ShieldCheck,
-  Sparkles,
   Upload,
   UserRound,
 } from 'lucide-react';
 
-type ViewKey = 'build' | 'portal' | 'signup' | 'submissions' | 'package' | 'guide';
+type BuilderView = 'build' | 'preview' | 'export';
 type TemplateKey = 'premium' | 'startup' | 'local';
-type RaiseMode = 'startup' | 'local';
-type LeadStatus = 'new' | 'reviewing' | 'package-sent' | 'approved' | 'declined' | 'funded';
-type SupporterType = 'individual' | 'business' | 'entity' | 'lender' | 'other';
 
-interface RaiseSettings {
+interface PortalSettings {
   templateKey: TemplateKey;
-  raiseMode: RaiseMode;
-  businessName: string;
+  companyName: string;
   legalName: string;
   founderName: string;
   founderTitle: string;
@@ -42,273 +31,175 @@ interface RaiseSettings {
   contactPhone: string;
   website: string;
   location: string;
-  logoDataUrl: string;
-  heroEyebrow: string;
-  portalHeadline: string;
-  portalSubtitle: string;
-  offerLabel: string;
+  portalEyebrow: string;
+  headline: string;
+  subheadline: string;
+  raiseLabel: string;
   roundType: string;
   fundingGoal: string;
   minimumInterest: string;
   deadline: string;
-  businessSummary: string;
-  opportunitySummary: string;
-  investmentThesis: string;
-  whyNowTitle: string;
-  whyNowSummary: string;
-  whyNowCards: string;
-  modelTitle: string;
-  modelSummary: string;
-  modelCards: string;
-  proofTitle: string;
-  proofSummary: string;
-  proofCards: string;
+  primaryCta: string;
+  secondaryCta: string;
+  businessOverview: string;
+  investorThesis: string;
+  whyNow: string;
+  businessModel: string;
+  proofPoints: string;
   useOfFunds: string;
-  marketTitle: string;
-  marketSummary: string;
-  marketCards: string;
+  marketOpportunity: string;
   termsSummary: string;
-  audienceSummary: string;
-  processSummary: string;
-  processSteps: string;
-  packageSummary: string;
+  investorProcess: string;
+  agreementTitle: string;
+  agreementSummary: string;
   riskNotice: string;
-  wireNotice: string;
+  logoDataUrl: string;
+  heroImageDataUrl: string;
+  agreementFileName: string;
+  agreementDataUrl: string;
 }
 
-interface SupporterForm {
-  supporterType: SupporterType;
-  fullName: string;
-  email: string;
-  phone: string;
-  cityState: string;
-  organization: string;
-  proposedAmount: string;
-  timing: string;
-  relationship: string;
-  message: string;
-  wantsPackage: boolean;
-  understandsReview: boolean;
-  typedName: string;
-}
+const STORAGE_KEY = 'moniezi-raise-v1-5-premium-portal-builder-state';
 
-interface Lead extends SupporterForm {
-  id: string;
-  submittedAt: string;
-  status: LeadStatus;
-}
-
-interface AppState {
-  settings: RaiseSettings;
-  leads: Lead[];
-}
-
-interface RowCard {
-  eyebrow: string;
-  title: string;
-  body: string;
-  tags: string[];
-}
-
-const STORAGE_KEY = 'moniezi-raise-v1-4-state';
-
-const premiumPortalTemplate: RaiseSettings = {
+const baseTemplate: PortalSettings = {
   templateKey: 'premium',
-  raiseMode: 'startup',
-  businessName: 'Apex Mission Systems',
-  legalName: 'Apex Mission Systems, Inc.',
+  companyName: 'Apex Growth Systems',
+  legalName: 'Apex Growth Systems, Inc.',
   founderName: 'Alex Founder',
   founderTitle: 'Founder & CEO',
   contactEmail: 'founder@example.com',
   contactPhone: '(555) 014-2026',
   website: 'https://example.com',
   location: 'United States',
-  logoDataUrl: '',
-  heroEyebrow: 'Private round · Premium investor portal',
-  portalHeadline: 'Back the company building a repeatable mission platform',
-  portalSubtitle:
-    'A professional private investor portal for selected contacts. Review the company story, investment case, use of funds, process, and next step before submitting a non-binding indication of interest.',
-  offerLabel: 'Premium private investor portal',
-  roundType: 'Private founder round',
+  portalEyebrow: 'Private funding portal for selected investors',
+  headline: 'A focused private round for a company ready to move from build stage to market execution',
+  subheadline:
+    'Review the business story, investment case, use of funds, owner process, and next step before submitting a non-binding indication of interest.',
+  raiseLabel: 'Private founder round',
+  roundType: 'Private investment / advisor-reviewed documents',
   fundingGoal: '250000',
   minimumInterest: '5000',
   deadline: '2026-06-30',
-  businessSummary:
-    'Apex Mission Systems is building a specialized business platform for customers who need a practical solution, credible execution, and a clear path from early product work to commercial deployment.',
-  opportunitySummary:
-    'The company is organizing private investor interest to fund product completion, customer validation, market launch, and professional readiness. The goal is to move from a founder-led build into a repeatable commercial program.',
-  investmentThesis:
-    'Investors are not just reviewing an idea. They are reviewing a company with a defined product direction, a focused customer segment, a founder-led execution plan, and a funding round tied to specific commercial milestones.',
-  whyNowTitle: 'Three forces make this moment important',
-  whyNowSummary:
-    'The investor case becomes stronger when the page explains why this business should be funded now, not someday. Use this section to connect customer demand, execution progress, and the funding window.',
-  whyNowCards:
-    '01|Execution proof|Built beyond the idea stage|The company has moved from concept into a working direction with defined deliverables, customer logic, and a founder-led execution plan.|Execution;Milestones;Founder-led\n02|Market opening|Customers need a clearer solution|The target customers are underserved by expensive, complex, or generic tools. The company is positioned around a focused use case instead of a broad unfocused product.|Customer Pain;Focused Market;Timing\n03|Funding leverage|Capital changes the speed of execution|The raise is tied to specific milestones: finish the product, reach customers, produce materials, and convert interest into revenue opportunities.|Use of Funds;Launch;Growth',
-  modelTitle: 'A repeatable business, not a one-off project',
-  modelSummary:
-    'This section explains how the business can repeat its work, reach customers, and create revenue after the first launch. It should show investors that the company has a model, not just a single transaction.',
-  modelCards:
-    '01|Product / service core|The main offer customers buy|Define the actual product, service, or platform the company sells and the problem it solves.\n02|Customer channel|How buyers are reached|Explain direct sales, local relationships, founder outreach, referrals, partnerships, marketplace listings, or vertical communities.\n03|Revenue path|How money comes in|Describe setup fees, product sales, subscriptions, service packages, licensing, repeat work, support, or expansion revenue.\n04|Operating advantage|Why this company can execute|Show founder expertise, cost advantage, relationships, speed, proprietary workflow, or market insight.',
-  proofTitle: 'Proof, assets, and readiness',
-  proofSummary:
-    'Investors need evidence. This section gives the buyer a place to show traction, early work, customer conversations, signed jobs, prototype status, revenue, assets, or business readiness.',
-  proofCards:
-    'Proof 01|Customer signal|Early customer conversations, signed jobs, waitlist interest, LOIs, referrals, or direct buyer feedback.\nProof 02|Product progress|Prototype, demo, app build, service workflow, operating process, supplier readiness, or technical milestone.\nProof 03|Founder credibility|Relevant experience, execution history, industry knowledge, operational discipline, or relationship network.\nProof 04|Commercial readiness|Launch plan, pricing path, customer acquisition plan, package materials, and next-step process.',
+  primaryCta: 'Submit investor interest',
+  secondaryCta: 'Download investor document',
+  businessOverview:
+    'Apex Growth Systems is building a practical business platform for a specific customer group that needs a clearer, more professional way to solve a costly operating problem. The company is moving from founder-led development into a repeatable commercial launch plan.',
+  investorThesis:
+    'The investment case is based on a focused product direction, a defined customer problem, founder-led execution, and a funding plan tied to specific commercial milestones rather than vague growth claims.',
+  whyNow:
+    'The timing matters because customers are already looking for simpler solutions, the founder has completed the early groundwork, and the next stage requires capital for product completion, customer acquisition, professional materials, and launch execution.',
+  businessModel:
+    'The business expects to earn revenue through product sales, service packages, setup fees, subscriptions, licensing, support, or repeat customer relationships. The portal should explain the first revenue path and why that path is realistic.',
+  proofPoints:
+    'Early product work completed. Customer conversations started. Founder has relevant operating experience. Launch plan and use of funds are defined. Investor package and next-step process are organized for review.',
   useOfFunds:
-    'Product completion, customer acquisition, launch materials, working capital, professional fees, founder operations, support systems, and the first commercial rollout milestones.',
-  marketTitle: 'Market opportunity and revenue logic',
-  marketSummary:
-    'This section helps the buyer explain why the business opportunity is large enough, specific enough, and urgent enough to deserve investor attention.',
-  marketCards:
-    'Market|Specific customer pain|Name the buyer group and the painful problem they already understand.\nOpportunity|Underserved segment|Explain why existing alternatives are too expensive, too complicated, too slow, or too generic.\nRevenue|Multiple paths|Describe the first revenue path and possible recurring, repeat, or expansion revenue.\nTiming|Why now|Connect the funding round to a concrete near-term milestone.',
+    'Product completion, customer acquisition, launch materials, working capital, professional fees, operating systems, and the first commercial rollout milestones.',
+  marketOpportunity:
+    'The opportunity is strongest when the company names a specific customer segment, explains the painful problem those customers already understand, and shows why existing alternatives are too expensive, too complicated, too slow, or too generic.',
   termsSummary:
-    'Proposed participation may be structured through a SAFE, convertible note, private business investment document, or other advisor-approved agreement. Final terms are subject to company review and written documentation.',
-  audienceSummary:
-    'Selected private contacts, warm introductions, friends and family, founder contacts, private investors, business supporters, or people who can evaluate the company directly.',
-  processSummary:
-    'Submit interest, request the package, speak with the founder, review final documents, verify payment instructions directly, and participate only after written company approval.',
-  processSteps:
-    '01|Express interest|Enter your contact information and proposed amount through the private signup flow.\n02|Request package|Receive or download the investor/supporter package for review.\n03|Founder conversation|Ask questions directly before any final decision.\n04|Review documents|Review the final advisor-approved documents and terms.\n05|Verify payment instructions|Do not send money until instructions are verified directly with the company.\n06|Receive confirmation|Participation is confirmed only after approval, signed documents, and cleared funds.',
-  packageSummary:
-    'The package should include the business overview, founder note, use of funds, proposed terms, risk notice, process steps, and contact information.',
+    'Proposed participation may be structured through a SAFE, convertible note, private investment agreement, business loan, revenue-share, profit-share, or another advisor-approved document. Final terms are subject to company review and signed documentation.',
+  investorProcess:
+    'Review the portal. Download or request the investor document. Submit a non-binding indication of interest. Speak with the owner. Review final documents. Verify payment instructions directly. Proceed only after written approval and cleared funds.',
+  agreementTitle: 'Investor / supporter agreement document',
+  agreementSummary:
+    'Upload the fillable agreement, SAFE, term sheet, private funding document, or supporter agreement that investors should download for review. If no document is uploaded yet, the portal can direct investors to request it by email.',
   riskNotice:
-    'This page collects non-binding indications of interest only. It is not a public offering, does not guarantee acceptance, and does not complete any investment, loan, or revenue-share arrangement. Final participation requires company approval, final documents, payment confirmation, and compliance with applicable rules.',
-  wireNotice:
-    'Do not send funds until the company verifies your information and sends final payment instructions from the official company contact email.',
+    'This page collects non-binding indications of interest only. It is not a public offering, does not guarantee acceptance, and does not complete any investment, loan, or revenue-share arrangement. Final participation requires owner approval, final documents, payment confirmation, and compliance with applicable rules.',
+  logoDataUrl: '',
+  heroImageDataUrl: '',
+  agreementFileName: '',
+  agreementDataUrl: '',
 };
 
-const startupTemplate: RaiseSettings = {
-  ...premiumPortalTemplate,
+const startupTemplate: PortalSettings = {
+  ...baseTemplate,
   templateKey: 'startup',
-  raiseMode: 'startup',
-  businessName: 'Acme Growth Labs',
-  legalName: 'Acme Growth Labs, Inc.',
-  heroEyebrow: 'Private startup round · Founder portal',
-  portalHeadline: 'Private founder round for selected investors',
-  portalSubtitle:
-    'Review the company, product direction, use of funds, proposed terms, and next steps before submitting a non-binding indication of interest.',
-  offerLabel: 'Startup / SAFE-style private raise',
-  roundType: 'Startup private raise',
-  businessSummary:
-    'Acme Growth Labs is building a focused software product for small business operators who need clearer records, better workflows, and a simpler path from daily operations to financing readiness.',
-  opportunitySummary:
-    'The company is opening a private early-stage round for people with an existing relationship, a warm introduction, or direct founder approval. Funding supports product completion, customer acquisition, and launch execution.',
-  investmentThesis:
-    'The thesis is simple: small operators need practical software that helps them look organized, control their records, and prepare for business growth without jumping into expensive enterprise platforms.',
-  useOfFunds:
-    'Product development, customer acquisition, launch marketing, support operations, working capital, and professional fees related to the financing process.',
+  companyName: 'Acme Founder Labs',
+  legalName: 'Acme Founder Labs, Inc.',
+  portalEyebrow: 'Private startup round for selected investors',
+  headline: 'A private startup round for investors who want to review the company before the next launch milestone',
+  raiseLabel: 'Startup / SAFE-style round',
+  roundType: 'SAFE or convertible-style documents',
+  businessOverview:
+    'Acme Founder Labs is building a focused software product for small operators who need clearer records, stronger workflows, and a simpler path from daily business activity to funding readiness.',
+  investorThesis:
+    'The thesis is that small operators need practical software that makes them look organized, keeps records under control, and helps them prepare for growth without jumping into expensive enterprise systems.',
+  whyNow:
+    'The product direction is defined, the customer problem is clear, and the next milestone is commercial execution: product polish, customer acquisition, launch materials, and early buyer conversion.',
+  businessModel:
+    'Revenue may come from direct digital-product sales, early-access packages, setup support, templates, licensing, subscriptions, or future hosted services once customer demand is validated.',
+  proofPoints:
+    'Working product version completed. Target customer defined. Early sales channels identified. Launch package and founder toolkit strategy prepared. Next milestone is buyer validation and first revenue.',
 };
 
-const localTemplate: RaiseSettings = {
-  ...premiumPortalTemplate,
+const localTemplate: PortalSettings = {
+  ...baseTemplate,
   templateKey: 'local',
-  raiseMode: 'local',
-  businessName: 'Northside Roofing & Repair',
+  companyName: 'Northside Roofing & Repair',
   legalName: 'Northside Roofing & Repair LLC',
   founderName: 'Jordan Owner',
   founderTitle: 'Owner',
   contactEmail: 'owner@example.com',
   contactPhone: '(555) 015-7700',
   location: 'New Jersey',
-  heroEyebrow: 'Private local-business expansion · Supporter portal',
-  portalHeadline: 'Private expansion funding for a local business',
-  portalSubtitle:
-    'Review the business, what the money will be used for, the owner plan, and the next step for selected private contacts.',
-  offerLabel: 'Local business expansion raise',
-  roundType: 'Private expansion funding',
+  portalEyebrow: 'Private local-business expansion portal',
+  headline: 'A local business expansion raise tied to equipment, crew capacity, materials, and signed work',
+  subheadline:
+    'Review the business, what the money is for, how expansion may increase operating capacity, and the owner review process before submitting interest.',
+  raiseLabel: 'Local business expansion raise',
+  roundType: 'Private business loan, revenue-share, profit-share, or advisor-reviewed agreement',
   fundingGoal: '75000',
   minimumInterest: '2500',
   deadline: '2026-07-31',
-  businessSummary:
-    'Northside Roofing & Repair is a local service business serving residential and small commercial customers. The business is seeking funding to expand capacity and complete more scheduled work.',
-  opportunitySummary:
-    'The owner is organizing private interest from selected contacts to support equipment, materials, vehicle capacity, working capital, and crew expansion. This is designed for practical local-business growth, not a Silicon Valley startup pitch.',
-  investmentThesis:
-    'The funding case is based on practical expansion: more equipment, more crew capacity, better job scheduling, and the ability to complete more revenue-producing work.',
-  whyNowTitle: 'Three forces make this expansion practical',
-  whyNowSummary:
-    'A local-business raise works when the page shows current demand, a clear use of funds, and a specific expansion plan.',
-  whyNowCards:
-    '01|Customer demand|More work than current capacity|The business has demand that can be better served with more equipment, materials, and crew support.|Jobs;Capacity;Local Demand\n02|Clear funding use|Money goes into operating capacity|Funding is tied to vehicles, tools, materials, working capital, and crew expansion instead of vague overhead.|Equipment;Materials;Crew\n03|Owner execution|Founder-led local operation|Supporters can evaluate the owner, reputation, work history, and local relationships directly.|Owner;Trust;Execution',
-  modelTitle: 'A practical expansion plan, not a startup fantasy',
-  modelSummary:
-    'This section explains how additional funding can increase work capacity and support more revenue-producing jobs.',
-  modelCards:
-    '01|Current business|Existing local service work|The business already serves customers and has a practical service model.\n02|Expansion input|Vehicles, tools, materials, and crew|The funding supports concrete operating needs that can increase capacity.\n03|Revenue capacity|More jobs completed|The business can pursue or complete more scheduled work when bottlenecks are reduced.\n04|Owner accountability|Direct operator relationship|Supporters can communicate with the owner and evaluate the business directly.',
-  proofTitle: 'Local proof and business readiness',
-  proofSummary:
-    'Use this section to show demand, job history, customer relationships, equipment needs, and owner credibility.',
-  proofCards:
-    'Proof 01|Work history|Completed jobs, repeat customers, referrals, reviews, or before-and-after proof.\nProof 02|Demand signal|Pending work, signed jobs, customer inquiries, seasonal demand, or service backlog.\nProof 03|Equipment need|Specific vehicle, tool, material, crew, or working-capital bottleneck.\nProof 04|Owner credibility|Experience, local reputation, trade skill, licenses, insurance, or vendor relationships.',
+  businessOverview:
+    'Northside Roofing & Repair is a local service business serving residential and small commercial customers. The owner is organizing private interest to expand capacity and complete more scheduled work.',
+  investorThesis:
+    'The funding case is practical: more equipment, better materials access, stronger crew capacity, and improved ability to complete revenue-producing jobs.',
+  whyNow:
+    'The business has local demand, a clear operating bottleneck, and a direct use for capital. Funding can support capacity rather than vague overhead.',
+  businessModel:
+    'The business earns revenue by completing service jobs for customers. Additional vehicles, tools, materials, crew support, and working capital may help the owner accept and complete more work.',
+  proofPoints:
+    'Completed jobs, repeat customers, referrals, owner trade experience, supplier relationships, equipment needs, and visible local demand can be presented as proof of readiness.',
   useOfFunds:
-    'Work truck deposit or lease support, roofing tools, safety equipment, materials for signed jobs, short-term working capital, subcontractor support, and customer acquisition.',
-  marketTitle: 'Local opportunity and repayment logic',
-  marketSummary:
-    'A local-business page should explain the service area, customer demand, expansion bottleneck, and how the owner expects to support repayment or agreed participation terms.',
-  marketCards:
-    'Service area|Local customer need|Explain the neighborhood, city, or region served and the demand for the service.\nBottleneck|Capacity problem|Show what currently limits growth: vehicle, crew, tools, materials, cash cycle, or scheduling.\nUse of funds|Concrete operating inputs|Tie the money directly to items that help the business complete more work.\nRepayment logic|Business cash-flow plan|Explain how completed jobs, monthly revenue, or agreed terms may support repayment or participation.',
-  termsSummary:
-    'Support may be discussed as a private business loan, repayment plan, revenue-share, profit-share, equipment-financing support, or other advisor-approved structure. Final terms are agreed separately in writing.',
-  audienceSummary:
-    'Friends, family, customers, local supporters, private lenders, business contacts, suppliers, and people who already know or can evaluate the owner.',
-  processSummary:
-    'Submit interest, request the expansion package, speak with the owner, review proposed terms, and proceed only after written approval and final documents.',
-  processSteps:
-    '01|Express interest|Enter your contact information and proposed support amount.\n02|Request package|Review the business expansion package and use of funds.\n03|Owner conversation|Speak with the owner before any decision.\n04|Review terms|Review the proposed repayment, revenue-share, profit-share, or support structure.\n05|Verify instructions|Do not send money until instructions are verified directly with the owner.\n06|Receive confirmation|Participation is confirmed only after approval, signed documents, and cleared funds.',
-  packageSummary:
-    'The supporter package should explain the business, expansion plan, use of funds, repayment concept, owner contact information, and review process.',
-  riskNotice:
-    'This page collects non-binding indications of interest only. It is not a public offering, does not guarantee repayment or return, and does not complete any loan, investment, or revenue-share arrangement. Final participation requires owner approval, final documents, and advisor review where appropriate.',
+    'Work truck deposit or lease support, tools, safety equipment, materials for scheduled jobs, short-term working capital, subcontractor support, and customer acquisition.',
+  marketOpportunity:
+    'Local customers need reliable service providers. The opportunity is based on service-area demand, owner reputation, job capacity, and the ability to complete more paid work when operating bottlenecks are reduced.',
 };
 
-const blankSupporter: SupporterForm = {
-  supporterType: 'individual',
-  fullName: '',
-  email: '',
-  phone: '',
-  cityState: '',
-  organization: '',
-  proposedAmount: '',
-  timing: 'Within 30 days after final documents are approved',
-  relationship: '',
-  message: '',
-  wantsPackage: true,
-  understandsReview: false,
-  typedName: '',
-};
-
-const demoLeads: Lead[] = [
+const templates: Array<{ key: TemplateKey; title: string; body: string; icon: React.ElementType; settings: PortalSettings }> = [
   {
-    ...blankSupporter,
-    id: 'demo-1',
-    fullName: 'Jordan Miller',
-    email: 'jordan@example.com',
-    phone: '(555) 201-1400',
-    cityState: 'Hoboken, NJ',
-    proposedAmount: '10000',
-    relationship: 'Family friend of the owner',
-    message: 'Please send the package and next-step details.',
-    understandsReview: true,
-    typedName: 'Jordan Miller',
-    submittedAt: '2026-05-01T15:30:00.000Z',
-    status: 'reviewing',
+    key: 'premium',
+    title: 'Premium Investor Portal',
+    body: 'Best for a polished private investor page with a serious company story, use of funds, proof, process, and agreement download.',
+    icon: Landmark,
+    settings: baseTemplate,
+  },
+  {
+    key: 'startup',
+    title: 'Startup / SAFE Portal',
+    body: 'Best for early-stage founders preparing a private startup round, SAFE-style package, investor review, and founder-led process.',
+    icon: Rocket,
+    settings: startupTemplate,
+  },
+  {
+    key: 'local',
+    title: 'Local Business Expansion Portal',
+    body: 'Best for contractors, service businesses, local operators, and owners raising for equipment, vehicles, crews, materials, or working capital.',
+    icon: Building2,
+    settings: localTemplate,
   },
 ];
 
-const inputBase =
-  'w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base font-semibold text-slate-950 shadow-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-white/10 dark:bg-slate-950/70 dark:text-white dark:focus:ring-blue-500/20';
-const labelBase = 'mb-2 block text-xs font-black uppercase tracking-[0.16em] text-slate-600 dark:text-slate-300';
-
 const money = (value: string | number) => {
-  const numeric = typeof value === 'number' ? value : Number(String(value).replace(/[^0-9.-]/g, ''));
+  const numeric = typeof value === 'number' ? value : Number(String(value || '').replace(/[^0-9.-]/g, ''));
   if (!Number.isFinite(numeric)) return '$0';
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(numeric);
 };
 
-const formatDate = (value?: string) => {
-  if (!value) return 'Not set';
+const formatDate = (value: string) => {
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
+  if (!value || Number.isNaN(date.getTime())) return 'Not set';
   return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
 };
 
@@ -321,7 +212,7 @@ const safeText = (value: string) =>
     .replace(/'/g, '&#039;');
 
 const slugify = (value: string) =>
-  value
+  String(value || 'moniezi-raise')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '') || 'moniezi-raise';
@@ -338,773 +229,561 @@ const downloadTextFile = (filename: string, content: string, type = 'text/plain;
   URL.revokeObjectURL(url);
 };
 
-const parseCards = (value: string): RowCard[] =>
-  String(value || '')
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line, index) => {
-      const parts = line.split('|').map((part) => part.trim());
-      return {
-        eyebrow: parts[0] || String(index + 1).padStart(2, '0'),
-        title: parts[1] || 'Untitled point',
-        body: parts[2] || '',
-        tags: (parts[3] || '')
-          .split(';')
-          .map((tag) => tag.trim())
-          .filter(Boolean),
-      };
-    });
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
 
-function loadState(): AppState {
+function loadSettings(): PortalSettings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { settings: premiumPortalTemplate, leads: demoLeads };
-    const parsed = JSON.parse(raw) as Partial<AppState>;
-    const settings = { ...premiumPortalTemplate, ...(parsed.settings || {}) } as RaiseSettings;
-    if ((settings as any).templateKey === 'emyrgen') settings.templateKey = 'premium';
-    if (settings.offerLabel.toLowerCase().includes('emyrgen')) settings.offerLabel = 'Premium private investor portal';
-    return {
-      settings,
-      leads: Array.isArray(parsed.leads) ? parsed.leads : demoLeads,
-    };
+    if (!raw) return baseTemplate;
+    return { ...baseTemplate, ...(JSON.parse(raw) as Partial<PortalSettings>) };
   } catch {
-    return { settings: premiumPortalTemplate, leads: demoLeads };
+    return baseTemplate;
   }
 }
 
-function LogoMark({ settings, size = 'md' }: { settings: RaiseSettings; size?: 'sm' | 'md' | 'lg' }) {
-  const sizeClass = size === 'lg' ? 'h-16 w-16 rounded-[1.35rem]' : size === 'sm' ? 'h-10 w-10 rounded-2xl' : 'h-12 w-12 rounded-2xl';
+function LogoMark({ settings, large = false }: { settings: PortalSettings; large?: boolean }) {
+  const size = large ? 'h-16 w-16 rounded-[1.45rem]' : 'h-12 w-12 rounded-2xl';
   if (settings.logoDataUrl) {
-    return <img src={settings.logoDataUrl} alt={`${settings.businessName} logo`} className={`${sizeClass} object-cover shadow-lg`} />;
+    return <img src={settings.logoDataUrl} alt={`${settings.companyName} logo`} className={`${size} object-cover shadow-2xl shadow-blue-950/20`} />;
   }
   return (
-    <div className={`grid ${sizeClass} place-items-center bg-gradient-to-br from-blue-500 to-indigo-700 shadow-lg shadow-blue-950/20`}>
-      <Landmark className={size === 'lg' ? 'h-9 w-9 text-white' : 'h-6 w-6 text-white'} />
+    <div className={`${size} grid place-items-center bg-gradient-to-br from-blue-500 via-indigo-600 to-slate-950 shadow-2xl shadow-blue-950/20`}>
+      <Landmark className={large ? 'h-9 w-9 text-white' : 'h-6 w-6 text-white'} />
     </div>
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Guidance({ title, bullets }: { title: string; bullets: string[] }) {
+  return (
+    <div className="rounded-[1.75rem] border border-blue-200/80 bg-blue-50/80 p-5 shadow-sm dark:border-blue-400/20 dark:bg-blue-500/10">
+      <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-700 dark:text-blue-200">Builder guidance</p>
+      <h4 className="mt-2 text-lg font-black tracking-tight text-slate-950 dark:text-white">{title}</h4>
+      <ul className="mt-4 grid gap-3 text-sm font-bold leading-6 text-slate-700 dark:text-slate-200">
+        {bullets.map((bullet) => (
+          <li key={bullet} className="flex gap-3">
+            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-300" />
+            <span>{bullet}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className={labelBase}>{label}</span>
-      {children}
+      <span className="block text-xs font-black uppercase tracking-[0.16em] text-slate-600 dark:text-slate-300">{label}</span>
+      {hint && <span className="mt-2 block text-sm font-bold leading-6 text-slate-500 dark:text-slate-400">{hint}</span>}
+      <div className="mt-3">{children}</div>
     </label>
   );
 }
 
-function SectionCard({ title, eyebrow, children }: { title: string; eyebrow?: string; children: React.ReactNode }) {
+function BuilderSection({ number, title, subtitle, children }: { number: string; title: string; subtitle: string; children: React.ReactNode }) {
   return (
-    <section className="w-full border-y border-slate-200 bg-white px-0 py-6 shadow-none dark:border-white/10 dark:bg-slate-900/75">
-      {eyebrow && <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">{eyebrow}</p>}
-      <h2 className="text-2xl font-black tracking-tight text-slate-950 dark:text-white">{title}</h2>
-      <div className="mt-5">{children}</div>
+    <section className="w-full border-y border-slate-200 bg-white px-5 py-8 dark:border-white/10 dark:bg-slate-900/80 sm:px-8 lg:px-10">
+      <div className="mb-7 flex items-start gap-4">
+        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-slate-950 text-sm font-black text-white shadow-xl shadow-slate-950/15 dark:bg-blue-500">
+          {number}
+        </div>
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">Portal builder</p>
+          <h2 className="mt-2 text-3xl font-black leading-none tracking-[-0.04em] text-slate-950 dark:text-white sm:text-4xl">{title}</h2>
+          <p className="mt-3 text-base font-bold leading-7 text-slate-600 dark:text-slate-300">{subtitle}</p>
+        </div>
+      </div>
+      <div className="grid gap-7">{children}</div>
     </section>
   );
 }
 
-function StatCard({ label, value, icon: Icon }: { label: string; value: string; icon: React.ElementType }) {
-  return (
-    <div className="rounded-[1.65rem] border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/60 dark:border-white/10 dark:bg-slate-900/70 dark:shadow-black/20">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-300">{label}</p>
-          <p className="mt-2 text-2xl font-black text-slate-950 dark:text-white">{value}</p>
-        </div>
-        <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-900/20">
-          <Icon className="h-6 w-6 text-white" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TemplateButton({ active, title, subtitle, icon: Icon, onClick }: { active: boolean; title: string; subtitle: string; icon: React.ElementType; onClick: () => void }) {
+function TemplateButton({ template, active, onClick }: { template: (typeof templates)[number]; active: boolean; onClick: () => void }) {
+  const Icon = template.icon;
   return (
     <button
       onClick={onClick}
-      className={`w-full rounded-3xl border p-5 text-left shadow-lg transition active:scale-[0.99] ${
+      className={`w-full rounded-[2rem] border p-5 text-left shadow-xl transition active:scale-[0.99] ${
         active
-          ? 'border-blue-500 bg-blue-50 text-slate-950 shadow-blue-900/10 dark:border-blue-400 dark:bg-blue-500/15 dark:text-white'
-          : 'border-slate-200 bg-white text-slate-900 shadow-slate-200/60 hover:border-blue-300 dark:border-white/10 dark:bg-slate-950/60 dark:text-white dark:shadow-black/20'
+          ? 'border-blue-500 bg-blue-50 text-slate-950 shadow-blue-900/10 dark:border-blue-300 dark:bg-blue-500/15 dark:text-white'
+          : 'border-slate-200 bg-white text-slate-950 shadow-slate-200/70 hover:border-blue-300 dark:border-white/10 dark:bg-slate-950/60 dark:text-white dark:shadow-black/20'
       }`}
     >
-      <div className="flex items-start gap-4">
-        <div className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${active ? 'bg-blue-600 text-white dark:bg-blue-500' : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-100'}`}>
+      <div className="flex gap-4">
+        <div className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-200'}`}>
           <Icon className="h-6 w-6" />
         </div>
         <div>
-          <h3 className="text-lg font-black">{title}</h3>
-          <p className="mt-2 text-sm font-bold leading-6 text-slate-600 dark:text-slate-300">{subtitle}</p>
+          <h3 className="text-xl font-black tracking-tight">{template.title}</h3>
+          <p className="mt-2 text-sm font-bold leading-6 text-slate-600 dark:text-slate-300">{template.body}</p>
         </div>
       </div>
     </button>
   );
 }
 
-function PortalMetric({ label, value }: { label: string; value: string }) {
+const inputClass =
+  'w-full rounded-[1.35rem] border border-slate-200 bg-white px-4 py-4 text-base font-bold text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-white/10 dark:bg-slate-950/70 dark:text-white dark:focus:ring-blue-500/20';
+const textAreaClass = `${inputClass} min-h-36 leading-7`;
+
+function UploadBox({ title, subtitle, fileName, accept, onFile }: { title: string; subtitle: string; fileName?: string; accept: string; onFile: (file: File) => void }) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/60 dark:border-white/10 dark:bg-white/10 dark:shadow-black/20">
-      <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-300">{label}</p>
-      <p className="mt-2 text-2xl font-black text-slate-950 dark:text-white">{value}</p>
+    <div className="rounded-[2rem] border border-dashed border-slate-300 bg-slate-50 p-5 dark:border-white/15 dark:bg-slate-950/50">
+      <div className="flex items-start gap-4">
+        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white text-blue-600 shadow-sm dark:bg-white/10 dark:text-blue-200">
+          <Upload className="h-6 w-6" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h4 className="text-lg font-black text-slate-950 dark:text-white">{title}</h4>
+          <p className="mt-2 text-sm font-bold leading-6 text-slate-600 dark:text-slate-300">{subtitle}</p>
+          {fileName && <p className="mt-3 rounded-xl bg-white px-3 py-2 text-sm font-black text-slate-700 dark:bg-white/10 dark:text-slate-100">Selected: {fileName}</p>}
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="mt-4 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg active:scale-95 dark:bg-blue-500"
+          >
+            Choose file
+          </button>
+          <input
+            ref={inputRef}
+            className="hidden"
+            type="file"
+            accept={accept}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) onFile(file);
+              event.currentTarget.value = '';
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 }
 
-function MiniCard({ card }: { card: RowCard }) {
+function PortalCard({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
   return (
-    <article className="rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/60 dark:border-white/10 dark:bg-white/5 dark:shadow-black/20">
-      <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">{card.eyebrow}</p>
-      <h3 className="mt-2 text-xl font-black tracking-tight text-slate-950 dark:text-white">{card.title}</h3>
-      <p className="mt-3 text-sm font-bold leading-6 text-slate-600 dark:text-slate-200">{card.body}</p>
-      {card.tags.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {card.tags.map((tag) => (
-            <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-slate-600 dark:bg-white/10 dark:text-slate-200">
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
+    <article className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/70 dark:border-white/10 dark:bg-white/5 dark:shadow-black/20">
+      <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">{eyebrow}</p>
+      <h3 className="mt-3 text-2xl font-black leading-tight tracking-[-0.035em] text-slate-950 dark:text-white">{title}</h3>
+      <p className="mt-4 text-base font-bold leading-8 text-slate-600 dark:text-slate-200">{body}</p>
     </article>
   );
 }
 
-function PortalSection({ eyebrow, title, summary, children }: { eyebrow: string; title: string; summary: string; children: React.ReactNode }) {
+function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <section className="border-y border-slate-200 bg-white px-4 py-7 shadow-none dark:border-white/10 dark:bg-slate-900/75">
-      <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">{eyebrow}</p>
-      <div className="mt-3 grid gap-4">
-        <h2 className="text-3xl font-black leading-tight tracking-[-0.045em] text-slate-950 dark:text-white sm:text-5xl">{title}</h2>
-        <p className="text-base font-bold leading-8 text-slate-600 dark:text-slate-200">{summary}</p>
-      </div>
-      <div className="mt-7">{children}</div>
-    </section>
-  );
-}
-
-function PortalPreview({ settings, onSignup }: { settings: RaiseSettings; onSignup: () => void }) {
-  const whyCards = parseCards(settings.whyNowCards);
-  const modelCards = parseCards(settings.modelCards);
-  const proofCards = parseCards(settings.proofCards);
-  const marketCards = parseCards(settings.marketCards);
-  const processCards = parseCards(settings.processSteps);
-
-  return (
-    <div className="w-full overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white shadow-none dark:from-slate-900 dark:via-slate-950 dark:to-slate-950">
-      <div className="flex flex-col gap-4 border-b border-slate-200 bg-white/75 p-5 backdrop-blur dark:border-white/10 dark:bg-slate-950/70 sm:justify-between">
-        <div className="flex items-center gap-3">
-          <LogoMark settings={settings} />
-          <div>
-            <p className="text-lg font-black text-slate-950 dark:text-white">{settings.businessName}</p>
-            <p className="text-sm font-bold text-slate-500 dark:text-slate-300">Private funding portal</p>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {['Offer', 'Why Now', 'Model', 'Proof', 'Market', 'Process', 'Signup'].map((item) => (
-            <span key={item} className="rounded-full border border-slate-200 bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.12em] text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
-              {item}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className="grid gap-0 p-0">
-        <div className="border-y border-slate-200 bg-white px-4 py-7 shadow-none dark:border-white/10 dark:bg-white/5">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">{settings.heroEyebrow}</p>
-          <h1 className="mt-4 text-4xl font-black leading-[0.95] tracking-[-0.055em] text-slate-950 dark:text-white sm:text-6xl lg:text-7xl">{settings.portalHeadline}</h1>
-          <p className="mt-5 text-lg font-bold leading-8 text-slate-600 dark:text-slate-200">{settings.portalSubtitle}</p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <button onClick={onSignup} className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-4 text-sm font-black text-white shadow-lg shadow-blue-900/20 active:scale-95 dark:bg-blue-500 dark:text-white dark:shadow-blue-950/30">
-              Start investor review <ArrowRight className="h-4 w-4" />
-            </button>
-            <a href={`mailto:${settings.contactEmail}`} className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-950 shadow-lg shadow-slate-200/60 dark:border-white/10 dark:bg-slate-900 dark:text-white dark:shadow-black/20">
-              Request package
-            </a>
-          </div>
-        </div>
-
-        <aside className="bg-slate-950 px-4 py-7 text-white shadow-none">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-300">The offer</p>
-          <h2 className="mt-3 text-3xl font-black tracking-tight">What investors are reviewing</h2>
-          <p className="mt-4 text-base font-bold leading-7 text-slate-300">{settings.opportunitySummary}</p>
-          <div className="mt-6 grid gap-3">
-            <PortalMetric label="Goal" value={money(settings.fundingGoal)} />
-            <PortalMetric label="Minimum" value={money(settings.minimumInterest)} />
-            <PortalMetric label="Deadline" value={formatDate(settings.deadline)} />
-            <PortalMetric label="Round" value={settings.raiseMode === 'startup' ? 'Startup' : 'Local'} />
-          </div>
-        </aside>
-      </div>
-
-      <div className="grid gap-0 p-0">
-        <PortalSection eyebrow="Investment case" title="What investors are buying into" summary={settings.investmentThesis}>
-          <div className="grid gap-4">
-            <MiniCard card={{ eyebrow: 'Business', title: settings.businessName, body: settings.businessSummary, tags: [settings.location, settings.roundType] }} />
-            <MiniCard card={{ eyebrow: 'Use of funds', title: 'Capital tied to milestones', body: settings.useOfFunds, tags: ['Funding Plan', 'Execution'] }} />
-            <MiniCard card={{ eyebrow: 'Terms', title: settings.offerLabel, body: settings.termsSummary, tags: ['Owner Review', 'Final Docs'] }} />
-          </div>
-        </PortalSection>
-
-        <PortalSection eyebrow="Why now" title={settings.whyNowTitle} summary={settings.whyNowSummary}>
-          <div className="grid gap-4">{whyCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
-        </PortalSection>
-
-        <PortalSection eyebrow="Business model" title={settings.modelTitle} summary={settings.modelSummary}>
-          <div className="grid gap-4">{modelCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
-        </PortalSection>
-
-        <PortalSection eyebrow="Proof" title={settings.proofTitle} summary={settings.proofSummary}>
-          <div className="grid gap-4">{proofCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
-        </PortalSection>
-
-        <PortalSection eyebrow="Market opportunity" title={settings.marketTitle} summary={settings.marketSummary}>
-          <div className="grid gap-4">{marketCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
-        </PortalSection>
-
-        <PortalSection eyebrow="Investment process" title="From interest to approved participation" summary={settings.processSummary}>
-          <div className="grid gap-4">{processCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
-        </PortalSection>
-
-        <section className="border-y border-amber-200 bg-amber-50 px-4 py-6 text-sm font-bold leading-7 text-amber-950 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-100">
-          <strong>Important notice:</strong> {settings.riskNotice} {settings.wireNotice}
-        </section>
-
-        <section className="bg-slate-950 px-4 py-7 text-white shadow-none dark:border-white/10">
-          <div className="grid gap-6">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-300">Investor signup</p>
-              <h2 className="mt-3 text-4xl font-black tracking-[-0.04em]">Begin the private review</h2>
-              <p className="mt-4 text-base font-bold leading-8 text-slate-300">Submit a non-binding indication of interest, request the package, and wait for owner review before any final documents or payment instructions.</p>
-            </div>
-            <div className="grid gap-3 rounded-3xl bg-white/10 p-5">
-              <p className="text-sm font-black uppercase tracking-[0.14em] text-blue-200">Contact</p>
-              <p className="text-lg font-black">{settings.founderName}</p>
-              <p className="font-bold text-slate-300">{settings.founderTitle}</p>
-              <p className="font-bold text-slate-300">{settings.contactEmail}</p>
-              <button onClick={onSignup} className="mt-2 rounded-2xl bg-blue-500 px-5 py-4 text-sm font-black text-white shadow-lg shadow-blue-950/30 active:scale-95">
-                Open signup flow
-              </button>
-            </div>
-          </div>
-        </section>
-      </div>
+    <div className="rounded-[1.5rem] border border-white/10 bg-white/10 p-4 text-white">
+      <p className="text-[11px] font-black uppercase tracking-[0.16em] text-blue-200">{label}</p>
+      <p className="mt-2 text-2xl font-black tracking-tight">{value}</p>
     </div>
   );
 }
 
-function rowCardsHtml(cards: RowCard[]) {
-  return cards
-    .map(
-      (card) => `<article class="card"><span>${safeText(card.eyebrow)}</span><h3>${safeText(card.title)}</h3><p>${safeText(card.body)}</p>${
-        card.tags.length ? `<div class="tags">${card.tags.map((tag) => `<b>${safeText(tag)}</b>`).join('')}</div>` : ''
-      }</article>`,
-    )
-    .join('');
-}
-
-function buildPortalHtml(settings: RaiseSettings) {
-  const accent = settings.raiseMode === 'startup' ? '#2563eb' : '#0f766e';
-  const subject = encodeURIComponent(`Interest in ${settings.businessName} funding page`);
-  const body = encodeURIComponent(`Hello ${settings.founderName},\n\nI reviewed the ${settings.businessName} funding page and would like to request more information.\n\nName:\nEmail:\nPhone:\nProposed amount:\nRelationship to business:\nMessage:\n\nThank you.`);
-  const whyCards = parseCards(settings.whyNowCards);
-  const modelCards = parseCards(settings.modelCards);
-  const proofCards = parseCards(settings.proofCards);
-  const marketCards = parseCards(settings.marketCards);
-  const processCards = parseCards(settings.processSteps);
-  return `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${safeText(settings.businessName)} Private Funding Portal</title>
-  <style>
-    :root { color-scheme: light; --accent: ${accent}; --ink: #0f172a; --muted: #475569; --line: #e2e8f0; --soft: #f8fafc; }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: linear-gradient(180deg, #eef5ff 0%, #f8fafc 42%, #ffffff 100%); color: var(--ink); }
-    .wrap { width: 100%; max-width: none; margin: 0; padding: 0 0 58px; }
-    .nav { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:0; position:sticky; top:0; z-index:5; padding:14px 0; backdrop-filter: blur(16px); background:rgba(255,255,255,.88); border-bottom:1px solid rgba(226,232,240,.9); }
-    .brand { display:flex; align-items:center; gap:14px; font-weight:950; } .mark { width:48px; height:48px; border-radius:18px; display:grid; place-items:center; color:white; background:linear-gradient(135deg,#3b82f6,#4338ca); box-shadow:0 18px 40px rgba(37,99,235,.25); }
-    .links { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; } .links a { text-decoration:none; color:#334155; font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:.1em; padding:9px 12px; border-radius:999px; background:rgba(255,255,255,.78); border:1px solid rgba(226,232,240,.9); }
-    .hero { display:grid; grid-template-columns:1fr; gap:0; align-items:stretch; }
-    h1 { font-size:clamp(42px,7vw,82px); line-height:.92; margin:22px 0 18px; letter-spacing:-.065em; } h2 { font-size:clamp(30px,4.4vw,54px); line-height:1; letter-spacing:-.055em; margin:0; } h3 { margin:8px 0 10px; font-size:21px; letter-spacing:-.025em; }
-    p { color:var(--muted); line-height:1.68; font-weight:680; } .lead { font-size:20px; color:#334155; max-width:760px; }
-    .pill { display:inline-flex; align-items:center; border:1px solid rgba(37,99,235,.22); background:rgba(255,255,255,.75); padding:9px 13px; border-radius:999px; color:#1d4ed8; font-size:12px; font-weight:950; letter-spacing:.08em; text-transform:uppercase; }
-    .panel { background:rgba(255,255,255,.96); border-top:1px solid rgba(226,232,240,.9); border-bottom:1px solid rgba(226,232,240,.9); border-radius:0; padding:26px 18px; box-shadow:none; } .dark { background:#0f172a; color:white; border-radius:0; padding:26px 18px; box-shadow:none; } .dark p { color:#cbd5e1; }
-    .cta { display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; } .btn { border-radius:18px; padding:16px 21px; font-size:15px; font-weight:950; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; } .primary { color:white; background:var(--accent); box-shadow:0 18px 40px rgba(37,99,235,.25); } .secondary { color:#0f172a; background:white; border:1px solid #dbe3ef; }
-    .metrics { display:grid; grid-template-columns:1fr; gap:12px; margin-top:24px; } .metric { border:1px solid rgba(226,232,240,.85); background:white; color:#0f172a; border-radius:22px; padding:18px; } .metric span, .card span { display:block; color:#64748b; font-size:11px; font-weight:950; letter-spacing:.14em; text-transform:uppercase; } .metric strong { display:block; margin-top:7px; font-size:24px; letter-spacing:-.03em; }
-    .section { margin-top:0; } .section-head { display:grid; grid-template-columns:1fr; gap:18px; margin-bottom:22px; } .section-head p { margin:0; font-size:17px; }
-    .grid3 { display:grid; grid-template-columns:1fr; gap:16px; } .grid4 { display:grid; grid-template-columns:1fr; gap:16px; }
-    .card { border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:white; border-radius:0; padding:22px 18px; box-shadow:none; } .card p { margin-bottom:0; }
-    .tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; } .tags b { border-radius:999px; background:#f1f5f9; color:#475569; padding:7px 10px; font-size:10px; letter-spacing:.08em; text-transform:uppercase; }
-    .notice { border-top:1px solid #fed7aa; border-bottom:1px solid #fed7aa; background:#fff7ed; color:#7c2d12; border-radius:0; padding:22px 18px; font-weight:760; line-height:1.65; } .signup { background:#0f172a; color:white; border-radius:0; padding:26px 18px; } .signup p { color:#cbd5e1; }
-    footer { margin-top:40px; color:#64748b; font-size:13px; font-weight:700; }
-    @media (max-width: 920px) { .links { display:none; } h1 { font-size: clamp(42px, 14vw, 68px); } .panel, .dark, .signup { padding-left:18px; padding-right:18px; border-radius:0; } }
-  </style>
-</head>
-<body>
-  <main class="wrap">
-    <header class="nav">
-      <div class="brand"><div class="mark">$</div><div>${safeText(settings.businessName)}<br><span style="color:#64748b;font-size:13px;">Private funding portal</span></div></div>
-      <nav class="links"><a href="#offer">Offer</a><a href="#why">Why Now</a><a href="#model">Model</a><a href="#proof">Proof</a><a href="#market">Market</a><a href="#process">Process</a><a href="#signup">Signup</a></nav>
-    </header>
-
-    <section class="hero" id="offer">
-      <div class="panel"><span class="pill">${safeText(settings.heroEyebrow)}</span><h1>${safeText(settings.portalHeadline)}</h1><p class="lead">${safeText(settings.portalSubtitle)}</p><div class="cta"><a class="btn primary" href="mailto:${safeText(settings.contactEmail)}?subject=${subject}&body=${body}">Request package / submit interest</a><a class="btn secondary" href="#process">Review process</a></div></div>
-      <aside class="dark"><span class="pill">The offer</span><h2>What investors are reviewing</h2><p>${safeText(settings.opportunitySummary)}</p><div class="metrics"><div class="metric"><span>Funding goal</span><strong>${money(settings.fundingGoal)}</strong></div><div class="metric"><span>Minimum interest</span><strong>${money(settings.minimumInterest)}</strong></div><div class="metric"><span>Deadline</span><strong>${formatDate(settings.deadline)}</strong></div><div class="metric"><span>Round</span><strong>${safeText(settings.roundType)}</strong></div></div></aside>
-    </section>
-
-    <section class="section panel"><div class="section-head"><h2>What investors are buying into</h2><p>${safeText(settings.investmentThesis)}</p></div><div class="grid3"><article class="card"><span>Business</span><h3>${safeText(settings.businessName)}</h3><p>${safeText(settings.businessSummary)}</p></article><article class="card"><span>Use of funds</span><h3>Capital tied to milestones</h3><p>${safeText(settings.useOfFunds)}</p></article><article class="card"><span>Terms</span><h3>${safeText(settings.offerLabel)}</h3><p>${safeText(settings.termsSummary)}</p></article></div></section>
-    <section class="section panel" id="why"><div class="section-head"><h2>${safeText(settings.whyNowTitle)}</h2><p>${safeText(settings.whyNowSummary)}</p></div><div class="grid3">${rowCardsHtml(whyCards)}</div></section>
-    <section class="section panel" id="model"><div class="section-head"><h2>${safeText(settings.modelTitle)}</h2><p>${safeText(settings.modelSummary)}</p></div><div class="grid4">${rowCardsHtml(modelCards)}</div></section>
-    <section class="section panel" id="proof"><div class="section-head"><h2>${safeText(settings.proofTitle)}</h2><p>${safeText(settings.proofSummary)}</p></div><div class="grid4">${rowCardsHtml(proofCards)}</div></section>
-    <section class="section panel" id="market"><div class="section-head"><h2>${safeText(settings.marketTitle)}</h2><p>${safeText(settings.marketSummary)}</p></div><div class="grid4">${rowCardsHtml(marketCards)}</div></section>
-    <section class="section panel" id="process"><div class="section-head"><h2>From interest to approved participation</h2><p>${safeText(settings.processSummary)}</p></div><div class="grid3">${rowCardsHtml(processCards)}</div></section>
-    <section class="section notice"><strong>Important notice:</strong> ${safeText(settings.riskNotice)} ${safeText(settings.wireNotice)}</section>
-    <section class="section signup" id="signup"><span class="pill">Investor signup</span><h2>Begin the private review</h2><p>Submit a non-binding indication of interest, request the package, and wait for owner review before any final documents or payment instructions.</p><div class="cta"><a class="btn primary" href="mailto:${safeText(settings.contactEmail)}?subject=${subject}&body=${body}">Request package / submit interest</a><a class="btn secondary" href="${safeText(settings.website)}">Visit company site</a></div><p><strong>${safeText(settings.founderName)}</strong><br>${safeText(settings.founderTitle)}<br>${safeText(settings.contactEmail)} · ${safeText(settings.contactPhone)}</p></section>
-    <footer>Generated with MONIEZI Raise V1.4. This static portal is a presentation and interest-intake page. It should be reviewed by appropriate advisors before use for any financing transaction.</footer>
-  </main>
-</body>
-</html>`;
-}
-
-function buildPackageHtml(settings: RaiseSettings, lead?: SupporterForm | Lead) {
-  const person = lead || blankSupporter;
-  return `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${safeText(settings.businessName)} Funding Package</title>
-  <style>
-    body { margin:0; background:#f8fafc; color:#0f172a; font-family:Inter, Arial, sans-serif; }
-    main { width:100%; max-width:none; margin:0; padding:0; }
-    section { background:white; border-top:1px solid #e2e8f0; border-bottom:1px solid #e2e8f0; border-radius:0; padding:28px 18px; box-shadow:none; }
-    h1 { font-size:34px; line-height:1.05; margin:10px 0 10px; } h2 { margin-top:28px; padding-top:20px; border-top:1px solid #e2e8f0; }
-    p { color:#334155; line-height:1.65; font-weight:650; } table { width:100%; border-collapse:collapse; margin-top:12px; }
-    th,td { text-align:left; vertical-align:top; border-bottom:1px solid #e2e8f0; padding:12px 8px; }
-    th { width:34%; color:#475569; font-size:12px; text-transform:uppercase; letter-spacing:.10em; }
-    .brand { color:#2563eb; font-size:12px; font-weight:900; letter-spacing:.22em; text-transform:uppercase; }
-    .notice { background:#fff7ed; border:1px solid #fed7aa; color:#7c2d12; padding:16px; border-radius:18px; }
-    @media print { body { background:white; } main { padding:0; } section { box-shadow:none; border:none; border-radius:0; } }
-  </style>
-</head>
-<body>
-<main><section>
-  <div class="brand">MONIEZI Raise V1.4 · Private Funding Package</div>
-  <h1>${safeText(settings.businessName)} Funding Package</h1>
-  <p>${safeText(settings.portalSubtitle)}</p>
-  <div class="notice"><strong>Important:</strong> ${safeText(settings.riskNotice)}</div>
-  <h2>Business Summary</h2><p>${safeText(settings.businessSummary)}</p>
-  <h2>Investment Case</h2><p>${safeText(settings.investmentThesis)}</p>
-  <h2>Opportunity Summary</h2><p>${safeText(settings.opportunitySummary)}</p>
-  <h2>Funding Details</h2>
-  <table>
-    <tr><th>Legal name</th><td>${safeText(settings.legalName)}</td></tr>
-    <tr><th>Founder / Owner</th><td>${safeText(settings.founderName)} · ${safeText(settings.founderTitle)}</td></tr>
-    <tr><th>Template</th><td>${safeText(settings.offerLabel)}</td></tr>
-    <tr><th>Funding goal</th><td>${money(settings.fundingGoal)}</td></tr>
-    <tr><th>Minimum interest</th><td>${money(settings.minimumInterest)}</td></tr>
-    <tr><th>Deadline</th><td>${formatDate(settings.deadline)}</td></tr>
-    <tr><th>Use of funds</th><td>${safeText(settings.useOfFunds)}</td></tr>
-    <tr><th>Terms summary</th><td>${safeText(settings.termsSummary)}</td></tr>
-    <tr><th>Process</th><td>${safeText(settings.processSummary)}</td></tr>
-  </table>
-  <h2>Supporter / Investor Interest</h2>
-  <table>
-    <tr><th>Name</th><td>${safeText(person.fullName || 'Not provided')}</td></tr>
-    <tr><th>Email</th><td>${safeText(person.email || 'Not provided')}</td></tr>
-    <tr><th>Phone</th><td>${safeText(person.phone || 'Not provided')}</td></tr>
-    <tr><th>Organization</th><td>${safeText(person.organization || 'Not provided')}</td></tr>
-    <tr><th>Proposed amount</th><td>${money(person.proposedAmount || '0')}</td></tr>
-    <tr><th>Relationship</th><td>${safeText(person.relationship || 'Not provided')}</td></tr>
-    <tr><th>Message</th><td>${safeText(person.message || 'Not provided')}</td></tr>
-    <tr><th>Typed name</th><td>${safeText(person.typedName || 'Not signed')}</td></tr>
-  </table>
-  <h2>Wire / Payment Security</h2><p>${safeText(settings.wireNotice)}</p>
-  <p style="font-size:12px;color:#64748b;">Generated by MONIEZI Raise V1.4. This is a business workflow document, not legal advice or a final financing agreement.</p>
-</section></main>
-</body>
-</html>`;
-}
-
-function MultilineEditor({ label, value, onChange, help }: { label: string; value: string; onChange: (value: string) => void; help?: string }) {
+function PortalSection({ eyebrow, title, body, children }: { eyebrow: string; title: string; body: string; children?: React.ReactNode }) {
   return (
-    <Field label={label}>
-      <textarea className={`${inputBase} min-h-36 font-mono text-sm leading-6`} value={value} onChange={(e) => onChange(e.target.value)} />
-      {help && <p className="mt-2 text-xs font-bold leading-5 text-slate-500 dark:text-slate-400">{help}</p>}
-    </Field>
+    <section className="w-full border-y border-slate-200 bg-white px-5 py-9 dark:border-white/10 dark:bg-slate-900 sm:px-8 lg:px-10">
+      <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">{eyebrow}</p>
+      <h2 className="mt-3 text-4xl font-black leading-none tracking-[-0.055em] text-slate-950 dark:text-white sm:text-5xl">{title}</h2>
+      <p className="mt-5 text-base font-bold leading-8 text-slate-600 dark:text-slate-200">{body}</p>
+      {children && <div className="mt-7">{children}</div>}
+    </section>
   );
 }
 
-function App() {
-  const [state, setState] = useState<AppState>(() => loadState());
-  const [view, setView] = useState<ViewKey>('build');
-  const [form, setForm] = useState<SupporterForm>(() => ({ ...blankSupporter }));
-  const [savedMessage, setSavedMessage] = useState('');
-
-  const { settings, leads } = state;
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [state]);
-
-  const totalInterest = useMemo(() => leads.reduce((sum, lead) => sum + (Number(lead.proposedAmount) || 0), 0), [leads]);
-  const canSubmit = Boolean(form.fullName.trim() && form.email.trim() && Number(form.proposedAmount) > 0 && form.understandsReview && form.typedName.trim());
-
-  const updateSettings = (patch: Partial<RaiseSettings>) => setState((prev) => ({ ...prev, settings: { ...prev.settings, ...patch } }));
-  const updateForm = (patch: Partial<SupporterForm>) => setForm((prev) => ({ ...prev, ...patch }));
-
-  const applyTemplate = (template: TemplateKey) => {
-    const next = template === 'premium' ? premiumPortalTemplate : template === 'startup' ? startupTemplate : localTemplate;
-    setState((prev) => ({ ...prev, settings: next }));
-    setSavedMessage(template === 'premium' ? 'Premium Investor Portal template applied.' : template === 'startup' ? 'Startup / SAFE template applied.' : 'Local Business Expansion template applied.');
-  };
-
-  const handleLogoUpload = (file?: File) => {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => updateSettings({ logoDataUrl: String(reader.result || '') });
-    reader.readAsDataURL(file);
-  };
-
-  const saveLead = () => {
-    if (!canSubmit) return;
-    const lead: Lead = {
-      ...form,
-      id: `lead-${Date.now()}`,
-      submittedAt: new Date().toISOString(),
-      status: 'new',
-    };
-    setState((prev) => ({ ...prev, leads: [lead, ...prev.leads] }));
-    setForm({ ...blankSupporter });
-    setView('submissions');
-  };
-
-  const updateLeadStatus = (id: string, status: LeadStatus) => {
-    setState((prev) => ({
-      ...prev,
-      leads: prev.leads.map((lead) => (lead.id === id ? { ...lead, status } : lead)),
-    }));
-  };
-
-  const exportPortal = () => downloadTextFile(`${slugify(settings.businessName)}-private-funding-portal.html`, buildPortalHtml(settings), 'text/html;charset=utf-8');
-  const exportProfile = () => downloadTextFile(`${slugify(settings.businessName)}-moniezi-raise-profile.json`, JSON.stringify(settings, null, 2), 'application/json;charset=utf-8');
-  const exportPackage = (lead?: SupporterForm | Lead) => downloadTextFile(`${slugify(settings.businessName)}-funding-package.html`, buildPackageHtml(settings, lead), 'text/html;charset=utf-8');
-  const exportLeadsCsv = () => {
-    const header = ['Name', 'Email', 'Phone', 'City/State', 'Organization', 'Type', 'Proposed Amount', 'Timing', 'Relationship', 'Package Requested', 'Status', 'Submitted At', 'Message'];
-    const rows = leads.map((lead) => [
-      lead.fullName,
-      lead.email,
-      lead.phone,
-      lead.cityState,
-      lead.organization,
-      lead.supporterType,
-      lead.proposedAmount,
-      lead.timing,
-      lead.relationship,
-      lead.wantsPackage ? 'Yes' : 'No',
-      lead.status,
-      lead.submittedAt,
-      lead.message,
-    ]);
-    const csv = [header, ...rows].map((row) => row.map((cell) => `"${String(cell || '').replace(/"/g, '""')}"`).join(',')).join('\n');
-    downloadTextFile(`${slugify(settings.businessName)}-raise-leads.csv`, csv, 'text/csv;charset=utf-8');
-  };
-
-  const navItems: Array<[ViewKey, React.ElementType, string]> = [
-    ['build', Settings, 'Build'],
-    ['portal', Eye, 'Preview'],
-    ['signup', Handshake, 'Signup'],
-    ['submissions', ClipboardCheck, 'Leads'],
-    ['package', FileText, 'Package'],
-    ['guide', ShieldCheck, 'Guide'],
-  ];
-
+function InvestorPortal({ settings, standalone = false }: { settings: PortalSettings; standalone?: boolean }) {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-white">
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/92 shadow-sm backdrop-blur dark:border-white/10 dark:bg-slate-950/92">
-        <div className="flex w-full items-center justify-between gap-3 px-0 py-4">
-          <div className="flex min-w-0 items-center gap-3">
-            <LogoMark settings={settings} />
-            <div className="min-w-0">
-              <p className="truncate text-lg font-black tracking-tight">MONIEZI Raise</p>
-              <p className="truncate text-xs font-black uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">V1.4 · Premium Mobile Portal Builder</p>
-            </div>
+    <div className="w-full overflow-hidden bg-slate-950 text-white">
+      <header className="sticky top-0 z-20 border-b border-white/10 bg-slate-950/90 px-5 py-4 backdrop-blur sm:px-8 lg:px-10">
+        <div className="flex items-center gap-3">
+          <LogoMark settings={settings} />
+          <div className="min-w-0">
+            <p className="truncate text-lg font-black">{settings.companyName}</p>
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-200">Private investor portal</p>
           </div>
-          <nav className="hidden items-center gap-2 lg:flex">
-            {navItems.map(([key, Icon, label]) => (
-              <button key={key} onClick={() => setView(key)} className={`inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-black transition ${view === key ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20 dark:bg-blue-500 dark:text-white' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/10'}`}>
-                <Icon className="h-4 w-4" /> {label}
-              </button>
-            ))}
-          </nav>
-          <button onClick={exportPortal} className="hidden items-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white shadow-lg active:scale-95 dark:bg-blue-500 dark:text-white sm:inline-flex">
-            <Download className="h-4 w-4" /> Export Portal
-          </button>
         </div>
       </header>
 
-      <main className="w-full px-0 pb-28 pt-0 lg:pb-12">
-        <section className="mb-0 grid gap-0">
-          <StatCard label="Funding Goal" value={money(settings.fundingGoal)} icon={BadgeDollarSign} />
-          <StatCard label="Interest Logged" value={money(totalInterest)} icon={Handshake} />
-          <StatCard label="Leads" value={String(leads.length)} icon={ClipboardCheck} />
-          <StatCard label="Template" value={settings.templateKey === 'premium' ? 'Premium' : settings.raiseMode === 'startup' ? 'Startup' : 'Local'} icon={Globe2} />
-        </section>
+      <section className="relative w-full overflow-hidden border-b border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,.40),_transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_54%,#172554_100%)] px-5 py-10 sm:px-8 lg:px-10">
+        {settings.heroImageDataUrl && <img src={settings.heroImageDataUrl} alt="Company visual" className="mb-7 h-56 w-full rounded-[2rem] object-cover shadow-2xl shadow-black/30" />}
+        <p className="inline-flex rounded-full border border-blue-300/25 bg-blue-300/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-blue-100">{settings.portalEyebrow}</p>
+        <h1 className="mt-5 text-5xl font-black leading-[0.92] tracking-[-0.07em] sm:text-7xl lg:text-8xl">{settings.headline}</h1>
+        <p className="mt-6 text-lg font-bold leading-8 text-slate-200 sm:text-xl">{settings.subheadline}</p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <a href="#investor-interest" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-4 text-sm font-black text-white shadow-2xl shadow-blue-950/30">
+            {settings.primaryCta} <ArrowRight className="h-4 w-4" />
+          </a>
+          <a
+            href={settings.agreementDataUrl || `mailto:${settings.contactEmail}?subject=${encodeURIComponent(`Request investor document for ${settings.companyName}`)}`}
+            download={settings.agreementDataUrl ? settings.agreementFileName || `${slugify(settings.companyName)}-agreement` : undefined}
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-5 py-4 text-sm font-black text-white"
+          >
+            {settings.secondaryCta} <Download className="h-4 w-4" />
+          </a>
+        </div>
+        <div className="mt-8 grid gap-3">
+          <Metric label="Funding goal" value={money(settings.fundingGoal)} />
+          <Metric label="Minimum interest" value={money(settings.minimumInterest)} />
+          <Metric label="Deadline" value={formatDate(settings.deadline)} />
+          <Metric label="Round type" value={settings.raiseLabel} />
+        </div>
+      </section>
 
-        {view === 'build' && (
-          <div className="grid gap-6">
-            <SectionCard title="Choose the investor portal template" eyebrow="Step 1 · The output the buyer is creating">
-              <div className="grid gap-4">
-                <TemplateButton active={settings.templateKey === 'premium'} title="Premium Investor Portal" subtitle="Full premium portal structure: offer, why now, business model, proof, market, process, package request, and signup. This is the strongest template for a serious private round." icon={Landmark} onClick={() => applyTemplate('premium')} />
-                <TemplateButton active={settings.templateKey === 'startup'} title="Startup / SAFE Raise" subtitle="For founders who need a private startup-style investor page, proposed SAFE terms, package request, and indication-of-interest flow." icon={Rocket} onClick={() => applyTemplate('startup')} />
-                <TemplateButton active={settings.templateKey === 'local'} title="Local Business Expansion" subtitle="For contractors, service businesses, operators, and local companies raising for vehicles, equipment, crews, materials, or working capital." icon={BriefcaseBusiness} onClick={() => applyTemplate('local')} />
-              </div>
-              {savedMessage && <p className="mt-4 rounded-2xl bg-blue-50 px-4 py-3 text-sm font-black text-blue-700 dark:bg-blue-500/10 dark:text-blue-200">{savedMessage}</p>}
-            </SectionCard>
+      <PortalSection eyebrow="The company" title="Business overview" body={settings.businessOverview}>
+        <div className="grid gap-4">
+          <PortalCard eyebrow="Investment case" title="Why this opportunity deserves review" body={settings.investorThesis} />
+          <PortalCard eyebrow="Business model" title="How the company expects to create revenue" body={settings.businessModel} />
+        </div>
+      </PortalSection>
 
-            <SectionCard title="Business identity" eyebrow="Step 2 · Owner details">
-              <div className="grid gap-4">
-                <Field label="Public business name"><input className={inputBase} value={settings.businessName} onChange={(e) => updateSettings({ businessName: e.target.value })} /></Field>
-                <Field label="Legal name"><input className={inputBase} value={settings.legalName} onChange={(e) => updateSettings({ legalName: e.target.value })} /></Field>
-                <Field label="Founder / Owner"><input className={inputBase} value={settings.founderName} onChange={(e) => updateSettings({ founderName: e.target.value })} /></Field>
-                <Field label="Title"><input className={inputBase} value={settings.founderTitle} onChange={(e) => updateSettings({ founderTitle: e.target.value })} /></Field>
-                <Field label="Email"><input className={inputBase} value={settings.contactEmail} onChange={(e) => updateSettings({ contactEmail: e.target.value })} /></Field>
-                <Field label="Phone"><input className={inputBase} value={settings.contactPhone} onChange={(e) => updateSettings({ contactPhone: e.target.value })} /></Field>
-                <Field label="Website"><input className={inputBase} value={settings.website} onChange={(e) => updateSettings({ website: e.target.value })} /></Field>
-                <Field label="Location"><input className={inputBase} value={settings.location} onChange={(e) => updateSettings({ location: e.target.value })} /></Field>
-              </div>
-              <div className="mt-4 flex flex-col gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50">
-                <LogoMark settings={settings} size="lg" />
-                <div className="flex-1">
-                  <p className="text-sm font-black text-slate-950 dark:text-white">Optional logo</p>
-                  <p className="mt-1 text-sm font-bold text-slate-600 dark:text-slate-300">Upload a logo for the generated portal. If no logo is added, MONIEZI Raise uses the Raise mark.</p>
-                </div>
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-900/20 active:scale-95">
-                  <Upload className="h-4 w-4" /> Upload Logo
-                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleLogoUpload(e.target.files?.[0])} />
-                </label>
-              </div>
-            </SectionCard>
+      <PortalSection eyebrow="Why now" title="The timing and funding window" body={settings.whyNow}>
+        <PortalCard eyebrow="Use of funds" title="Capital tied to specific execution needs" body={settings.useOfFunds} />
+      </PortalSection>
 
-            <SectionCard title="Hero and offer" eyebrow="Step 3 · Top of the investor page">
-              <div className="grid gap-4">
-                <Field label="Hero eyebrow"><input className={inputBase} value={settings.heroEyebrow} onChange={(e) => updateSettings({ heroEyebrow: e.target.value })} /></Field>
-                <Field label="Portal headline"><textarea className={`${inputBase} min-h-24`} value={settings.portalHeadline} onChange={(e) => updateSettings({ portalHeadline: e.target.value })} /></Field>
-                <Field label="Portal subtitle"><textarea className={`${inputBase} min-h-28`} value={settings.portalSubtitle} onChange={(e) => updateSettings({ portalSubtitle: e.target.value })} /></Field>
-                <Field label="Opportunity summary"><textarea className={`${inputBase} min-h-32`} value={settings.opportunitySummary} onChange={(e) => updateSettings({ opportunitySummary: e.target.value })} /></Field>
-              </div>
-            </SectionCard>
+      <PortalSection eyebrow="Proof" title="Evidence, readiness, and credibility" body={settings.proofPoints}>
+        <PortalCard eyebrow="Market opportunity" title="The customer problem and revenue logic" body={settings.marketOpportunity} />
+      </PortalSection>
 
-            <SectionCard title="Investor story" eyebrow="Step 4 · Substance investors need">
-              <div className="grid gap-4">
-                <Field label="Business summary"><textarea className={`${inputBase} min-h-32`} value={settings.businessSummary} onChange={(e) => updateSettings({ businessSummary: e.target.value })} /></Field>
-                <Field label="Investment thesis"><textarea className={`${inputBase} min-h-32`} value={settings.investmentThesis} onChange={(e) => updateSettings({ investmentThesis: e.target.value })} /></Field>
-                <Field label="Why now section title"><input className={inputBase} value={settings.whyNowTitle} onChange={(e) => updateSettings({ whyNowTitle: e.target.value })} /></Field>
-                <Field label="Why now summary"><textarea className={`${inputBase} min-h-28`} value={settings.whyNowSummary} onChange={(e) => updateSettings({ whyNowSummary: e.target.value })} /></Field>
-                <MultilineEditor label="Why now cards" value={settings.whyNowCards} onChange={(value) => updateSettings({ whyNowCards: value })} help="One card per line: Number | Title | Body | optional;tags" />
-              </div>
-            </SectionCard>
+      <PortalSection eyebrow="Terms" title="Proposed participation structure" body={settings.termsSummary}>
+        <PortalCard eyebrow="Process" title="From interest to approved participation" body={settings.investorProcess} />
+      </PortalSection>
 
-            <SectionCard title="Model, proof, and market" eyebrow="Step 5 · Make the page persuasive">
-              <div className="grid gap-4">
-                <Field label="Business model title"><input className={inputBase} value={settings.modelTitle} onChange={(e) => updateSettings({ modelTitle: e.target.value })} /></Field>
-                <Field label="Business model summary"><textarea className={`${inputBase} min-h-28`} value={settings.modelSummary} onChange={(e) => updateSettings({ modelSummary: e.target.value })} /></Field>
-                <MultilineEditor label="Business model cards" value={settings.modelCards} onChange={(value) => updateSettings({ modelCards: value })} />
-                <Field label="Proof section title"><input className={inputBase} value={settings.proofTitle} onChange={(e) => updateSettings({ proofTitle: e.target.value })} /></Field>
-                <Field label="Proof section summary"><textarea className={`${inputBase} min-h-28`} value={settings.proofSummary} onChange={(e) => updateSettings({ proofSummary: e.target.value })} /></Field>
-                <MultilineEditor label="Proof cards" value={settings.proofCards} onChange={(value) => updateSettings({ proofCards: value })} />
-                <Field label="Market title"><input className={inputBase} value={settings.marketTitle} onChange={(e) => updateSettings({ marketTitle: e.target.value })} /></Field>
-                <Field label="Market summary"><textarea className={`${inputBase} min-h-28`} value={settings.marketSummary} onChange={(e) => updateSettings({ marketSummary: e.target.value })} /></Field>
-                <MultilineEditor label="Market cards" value={settings.marketCards} onChange={(value) => updateSettings({ marketCards: value })} />
-              </div>
-            </SectionCard>
+      <section id="investor-interest" className="w-full border-y border-white/10 bg-slate-950 px-5 py-10 sm:px-8 lg:px-10">
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-300">Investor interest</p>
+        <h2 className="mt-3 text-4xl font-black leading-none tracking-[-0.055em] text-white sm:text-5xl">Begin the private review</h2>
+        <p className="mt-5 text-base font-bold leading-8 text-slate-300">
+          Submit your name, contact details, proposed interest amount, and questions. This is a non-binding indication of interest for owner review only.
+        </p>
+        <form className="mt-7 grid gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-5">
+          <input className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-bold text-slate-950" placeholder="Full name" />
+          <input className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-bold text-slate-950" placeholder="Email" />
+          <input className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-bold text-slate-950" placeholder="Phone" />
+          <input className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-bold text-slate-950" placeholder="Proposed amount" />
+          <textarea className="min-h-32 rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-bold text-slate-950" placeholder="Message or questions" />
+          <a href={`mailto:${settings.contactEmail}?subject=${encodeURIComponent(`Investor interest in ${settings.companyName}`)}&body=${encodeURIComponent('Name:\nEmail:\nPhone:\nProposed amount:\nMessage:\n')}`} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-4 text-sm font-black text-white shadow-2xl shadow-blue-950/30">
+            Email interest to owner <Mail className="h-4 w-4" />
+          </a>
+        </form>
+      </section>
 
-            <SectionCard title="Funding structure and process" eyebrow="Step 6 · Amounts, package, and next steps">
-              <div className="grid gap-4">
-                <Field label="Funding goal"><input className={inputBase} inputMode="numeric" value={settings.fundingGoal} onChange={(e) => updateSettings({ fundingGoal: e.target.value })} /></Field>
-                <Field label="Minimum interest"><input className={inputBase} inputMode="numeric" value={settings.minimumInterest} onChange={(e) => updateSettings({ minimumInterest: e.target.value })} /></Field>
-                <Field label="Deadline"><input className={inputBase} type="date" value={settings.deadline} onChange={(e) => updateSettings({ deadline: e.target.value })} /></Field>
-              </div>
-              <div className="mt-4 grid gap-4">
-                <Field label="Offer label"><input className={inputBase} value={settings.offerLabel} onChange={(e) => updateSettings({ offerLabel: e.target.value })} /></Field>
-                <Field label="Round type"><input className={inputBase} value={settings.roundType} onChange={(e) => updateSettings({ roundType: e.target.value })} /></Field>
-                <Field label="Use of funds"><textarea className={`${inputBase} min-h-28`} value={settings.useOfFunds} onChange={(e) => updateSettings({ useOfFunds: e.target.value })} /></Field>
-                <Field label="Terms summary"><textarea className={`${inputBase} min-h-28`} value={settings.termsSummary} onChange={(e) => updateSettings({ termsSummary: e.target.value })} /></Field>
-                <Field label="Who this is for"><textarea className={`${inputBase} min-h-24`} value={settings.audienceSummary} onChange={(e) => updateSettings({ audienceSummary: e.target.value })} /></Field>
-                <Field label="Process summary"><textarea className={`${inputBase} min-h-24`} value={settings.processSummary} onChange={(e) => updateSettings({ processSummary: e.target.value })} /></Field>
-                <MultilineEditor label="Process steps" value={settings.processSteps} onChange={(value) => updateSettings({ processSteps: value })} />
-                <Field label="Package summary"><textarea className={`${inputBase} min-h-24`} value={settings.packageSummary} onChange={(e) => updateSettings({ packageSummary: e.target.value })} /></Field>
-              </div>
-            </SectionCard>
+      <section className="w-full bg-amber-50 px-5 py-7 text-amber-950 sm:px-8 lg:px-10">
+        <p className="text-xs font-black uppercase tracking-[0.18em]">Important review notice</p>
+        <p className="mt-3 text-sm font-bold leading-7">{settings.riskNotice}</p>
+      </section>
 
-            <SectionCard title="Review notices" eyebrow="Step 7 · Safer wording">
-              <div className="grid gap-4">
-                <Field label="Risk / review notice"><textarea className={`${inputBase} min-h-28`} value={settings.riskNotice} onChange={(e) => updateSettings({ riskNotice: e.target.value })} /></Field>
-                <Field label="Payment security notice"><textarea className={`${inputBase} min-h-24`} value={settings.wireNotice} onChange={(e) => updateSettings({ wireNotice: e.target.value })} /></Field>
-              </div>
-            </SectionCard>
+      <footer className="w-full bg-slate-950 px-5 py-7 text-sm font-bold leading-7 text-slate-400 sm:px-8 lg:px-10">
+        <p>{settings.legalName} · {settings.location}</p>
+        <p>{settings.contactEmail} · {settings.contactPhone} {settings.website ? `· ${settings.website}` : ''}</p>
+        {!standalone && <p className="mt-3 text-xs uppercase tracking-[0.14em] text-slate-500">Preview generated by MONIEZI Raise V1.5</p>}
+      </footer>
+    </div>
+  );
+}
 
-            <div className="flex flex-wrap gap-3">
-              <button onClick={() => setView('portal')} className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-4 text-sm font-black text-white shadow-lg shadow-blue-900/20 active:scale-95"><Eye className="h-4 w-4" /> Preview Investor Portal</button>
-              <button onClick={exportPortal} className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-lg active:scale-95 dark:bg-blue-500 dark:text-white"><Download className="h-4 w-4" /> Export Static Portal HTML</button>
-              <button onClick={exportProfile} className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-950 shadow-lg active:scale-95 dark:border-white/10 dark:bg-slate-900 dark:text-white"><Save className="h-4 w-4" /> Export Profile</button>
-            </div>
+function buildPortalHtml(settings: PortalSettings) {
+  const agreementHref = settings.agreementDataUrl || `mailto:${settings.contactEmail}?subject=${encodeURIComponent(`Request investor document for ${settings.companyName}`)}`;
+  const agreementDownload = settings.agreementDataUrl ? ` download="${safeText(settings.agreementFileName || `${slugify(settings.companyName)}-agreement`)}"` : '';
+  const heroImage = settings.heroImageDataUrl ? `<img class="heroImage" src="${settings.heroImageDataUrl}" alt="Company visual" />` : '';
+  const logo = settings.logoDataUrl ? `<img class="logo" src="${settings.logoDataUrl}" alt="${safeText(settings.companyName)} logo" />` : '<div class="logoMark">◆</div>';
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${safeText(settings.companyName)} Private Investor Portal</title>
+<style>
+*{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#020617;color:white} a{text-decoration:none}.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:14px;padding:16px 20px;background:rgba(2,6,23,.92);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.1)}.logo,.logoMark{width:50px;height:50px;border-radius:18px;object-fit:cover}.logoMark{display:grid;place-items:center;background:linear-gradient(135deg,#3b82f6,#1e1b4b);box-shadow:0 18px 45px rgba(37,99,235,.28)}.brand strong{display:block;font-size:18px}.brand span{display:block;margin-top:3px;color:#bfdbfe;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.16em}.hero{padding:42px 20px;background:radial-gradient(circle at top left,rgba(59,130,246,.42),transparent 35%),linear-gradient(135deg,#020617,#0f172a 56%,#172554);border-bottom:1px solid rgba(255,255,255,.1)}.heroImage{width:100%;height:230px;object-fit:cover;border-radius:32px;margin-bottom:28px;box-shadow:0 26px 70px rgba(0,0,0,.38)}.eyebrow{display:inline-flex;border:1px solid rgba(147,197,253,.28);background:rgba(147,197,253,.1);border-radius:999px;padding:9px 14px;color:#dbeafe;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.15em}h1{margin:22px 0 0;font-size:clamp(46px,12vw,88px);line-height:.92;letter-spacing:-.075em}h2{margin:0;font-size:clamp(38px,9vw,60px);line-height:.96;letter-spacing:-.06em}.lead{margin-top:24px;color:#dbeafe;font-size:19px;font-weight:750;line-height:1.7}.cta{display:grid;gap:12px;margin-top:30px}.btn{display:flex;justify-content:center;align-items:center;border-radius:20px;padding:17px 20px;font-size:14px;font-weight:950}.primary{background:#3b82f6;color:white;box-shadow:0 20px 46px rgba(30,64,175,.36)}.secondary{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);color:white}.metrics{display:grid;gap:12px;margin-top:30px}.metric{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.08);border-radius:24px;padding:18px}.metric span,.card span{display:block;color:#bfdbfe;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.15em}.metric strong{display:block;margin-top:7px;font-size:27px;letter-spacing:-.04em}.section{padding:38px 20px;background:#fff;color:#0f172a;border-bottom:1px solid #e2e8f0}.section.dark{background:#0f172a;color:white;border-color:rgba(255,255,255,.1)}.section.dark p{color:#cbd5e1}.section p{color:#475569;font-size:16px;font-weight:720;line-height:1.75}.card{margin-top:18px;border:1px solid #e2e8f0;background:white;border-radius:30px;padding:22px;box-shadow:0 20px 55px rgba(15,23,42,.08)}.dark .card{border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.05);box-shadow:none}.card h3{margin:10px 0 0;font-size:25px;line-height:1.08;letter-spacing:-.04em}.card p{margin-top:15px}.interest{padding:40px 20px;background:#020617;border-top:1px solid rgba(255,255,255,.1)}.interest p{color:#cbd5e1;font-size:16px;font-weight:720;line-height:1.7}.form{display:grid;gap:14px;margin-top:24px;padding:20px;border-radius:30px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05)}input,textarea{width:100%;border:0;border-radius:18px;padding:16px;font-size:16px;font-weight:750;color:#0f172a}textarea{min-height:130px}.notice{padding:28px 20px;background:#fffbeb;color:#78350f}.notice p{font-weight:760;line-height:1.75}.foot{padding:28px 20px;background:#020617;color:#94a3b8;font-weight:750;line-height:1.7}@media(min-width:900px){.top,.hero,.section,.interest,.notice,.foot{padding-left:42px;padding-right:42px}.cta{display:flex;flex-wrap:wrap}.metrics{grid-template-columns:1fr}.heroImage{height:420px}}
+</style>
+</head>
+<body>
+<header class="top">${logo}<div class="brand"><strong>${safeText(settings.companyName)}</strong><span>Private investor portal</span></div></header>
+<section class="hero">${heroImage}<span class="eyebrow">${safeText(settings.portalEyebrow)}</span><h1>${safeText(settings.headline)}</h1><p class="lead">${safeText(settings.subheadline)}</p><div class="cta"><a class="btn primary" href="#investor-interest">${safeText(settings.primaryCta)}</a><a class="btn secondary" href="${agreementHref}"${agreementDownload}>${safeText(settings.secondaryCta)}</a></div><div class="metrics"><div class="metric"><span>Funding goal</span><strong>${money(settings.fundingGoal)}</strong></div><div class="metric"><span>Minimum interest</span><strong>${money(settings.minimumInterest)}</strong></div><div class="metric"><span>Deadline</span><strong>${safeText(formatDate(settings.deadline))}</strong></div><div class="metric"><span>Round type</span><strong>${safeText(settings.raiseLabel)}</strong></div></div></section>
+<section class="section"><span class="eyebrow">The company</span><h2>Business overview</h2><p>${safeText(settings.businessOverview)}</p><article class="card"><span>Investment case</span><h3>Why this opportunity deserves review</h3><p>${safeText(settings.investorThesis)}</p></article><article class="card"><span>Business model</span><h3>How the company expects to create revenue</h3><p>${safeText(settings.businessModel)}</p></article></section>
+<section class="section dark"><span class="eyebrow">Why now</span><h2>The timing and funding window</h2><p>${safeText(settings.whyNow)}</p><article class="card"><span>Use of funds</span><h3>Capital tied to specific execution needs</h3><p>${safeText(settings.useOfFunds)}</p></article></section>
+<section class="section"><span class="eyebrow">Proof</span><h2>Evidence, readiness, and credibility</h2><p>${safeText(settings.proofPoints)}</p><article class="card"><span>Market opportunity</span><h3>The customer problem and revenue logic</h3><p>${safeText(settings.marketOpportunity)}</p></article></section>
+<section class="section"><span class="eyebrow">Terms</span><h2>Proposed participation structure</h2><p>${safeText(settings.termsSummary)}</p><article class="card"><span>Process</span><h3>From interest to approved participation</h3><p>${safeText(settings.investorProcess)}</p></article></section>
+<section id="investor-interest" class="interest"><span class="eyebrow">Investor interest</span><h2>Begin the private review</h2><p>Submit your name, contact details, proposed interest amount, and questions. This is a non-binding indication of interest for owner review only.</p><div class="form"><input placeholder="Full name"/><input placeholder="Email"/><input placeholder="Phone"/><input placeholder="Proposed amount"/><textarea placeholder="Message or questions"></textarea><a class="btn primary" href="mailto:${safeText(settings.contactEmail)}?subject=${encodeURIComponent(`Investor interest in ${settings.companyName}`)}&body=${encodeURIComponent('Name:\nEmail:\nPhone:\nProposed amount:\nMessage:\n')}">Email interest to owner</a></div></section>
+<section class="notice"><strong>Important review notice</strong><p>${safeText(settings.riskNotice)}</p></section>
+<footer class="foot"><p>${safeText(settings.legalName)} · ${safeText(settings.location)}</p><p>${safeText(settings.contactEmail)} · ${safeText(settings.contactPhone)} ${settings.website ? `· ${safeText(settings.website)}` : ''}</p><p>Generated with MONIEZI Raise V1.5.</p></footer>
+</body>
+</html>`;
+}
+
+function buildPackageText(settings: PortalSettings) {
+  return `MONIEZI RAISE V1.5 — PRIVATE INVESTOR PORTAL PACKAGE\n\nCompany: ${settings.companyName}\nLegal name: ${settings.legalName}\nFounder / Owner: ${settings.founderName}, ${settings.founderTitle}\nContact: ${settings.contactEmail} · ${settings.contactPhone}\nWebsite: ${settings.website}\nLocation: ${settings.location}\n\nFunding Goal: ${money(settings.fundingGoal)}\nMinimum Interest: ${money(settings.minimumInterest)}\nDeadline: ${formatDate(settings.deadline)}\nRound / Structure: ${settings.roundType}\n\nBUSINESS OVERVIEW\n${settings.businessOverview}\n\nINVESTOR THESIS\n${settings.investorThesis}\n\nWHY NOW\n${settings.whyNow}\n\nBUSINESS MODEL\n${settings.businessModel}\n\nPROOF / READINESS\n${settings.proofPoints}\n\nUSE OF FUNDS\n${settings.useOfFunds}\n\nMARKET OPPORTUNITY\n${settings.marketOpportunity}\n\nTERMS SUMMARY\n${settings.termsSummary}\n\nINVESTOR PROCESS\n${settings.investorProcess}\n\nAGREEMENT DOCUMENT\n${settings.agreementFileName ? `Attached / uploaded document: ${settings.agreementFileName}` : 'No agreement file uploaded yet. Investors should request the document from the owner.'}\n\nRISK NOTICE\n${settings.riskNotice}\n\nGenerated by MONIEZI Raise V1.5. This package is an organization and presentation aid, not legal, accounting, tax, investment, or securities advice.`;
+}
+
+function App() {
+  const [view, setView] = useState<BuilderView>('build');
+  const [settings, setSettings] = useState<PortalSettings>(() => loadSettings());
+  const [savedAt, setSavedAt] = useState<string>('');
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  }, [settings]);
+
+  const update = (patch: Partial<PortalSettings>) => setSettings((current) => ({ ...current, ...patch }));
+
+  const selectTemplate = (key: TemplateKey) => {
+    const template = templates.find((item) => item.key === key)?.settings || baseTemplate;
+    setSettings((current) => ({ ...template, logoDataUrl: current.logoDataUrl, heroImageDataUrl: current.heroImageDataUrl, agreementDataUrl: current.agreementDataUrl, agreementFileName: current.agreementFileName }));
+  };
+
+  const exportPortal = () => downloadTextFile(`${slugify(settings.companyName)}-investor-portal.html`, buildPortalHtml(settings), 'text/html;charset=utf-8');
+  const exportProfile = () => downloadTextFile(`${slugify(settings.companyName)}-portal-builder-profile.json`, JSON.stringify(settings, null, 2), 'application/json;charset=utf-8');
+  const exportPackage = () => downloadTextFile(`${slugify(settings.companyName)}-private-funding-package.txt`, buildPackageText(settings));
+
+  const visibleProgress = useMemo(() => {
+    const fields = [
+      settings.companyName,
+      settings.headline,
+      settings.businessOverview,
+      settings.investorThesis,
+      settings.useOfFunds,
+      settings.termsSummary,
+      settings.contactEmail,
+    ];
+    const complete = fields.filter((field) => String(field || '').trim().length > 12).length;
+    return Math.round((complete / fields.length) * 100);
+  }, [settings]);
+
+  const handleUpload = async (file: File, type: 'logo' | 'hero' | 'agreement') => {
+    const dataUrl = await readFileAsDataUrl(file);
+    if (type === 'logo') update({ logoDataUrl: dataUrl });
+    if (type === 'hero') update({ heroImageDataUrl: dataUrl });
+    if (type === 'agreement') update({ agreementDataUrl: dataUrl, agreementFileName: file.name });
+  };
+
+  const saveStamp = () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    setSavedAt(new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }));
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-slate-100 text-slate-950 dark:bg-slate-950 dark:text-white">
+      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/92 px-5 py-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-slate-950/90 sm:px-8 lg:px-10">
+        <div className="flex items-center gap-3">
+          <LogoMark settings={settings} />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-lg font-black tracking-tight">MONIEZI Raise</p>
+            <p className="truncate text-xs font-black uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">V1.5 · Premium Investor Portal Builder</p>
           </div>
-        )}
-
-        {view === 'portal' && (
-          <div className="grid gap-6">
-            <SectionCard title="Generated investor/supporter portal" eyebrow="This is the real output the buyer can share or export">
-              <PortalPreview settings={settings} onSignup={() => setView('signup')} />
-              <div className="mt-5 flex flex-wrap gap-3">
-                <button onClick={() => setView('build')} className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-950 shadow-lg active:scale-95 dark:border-white/10 dark:bg-slate-900 dark:text-white"><Settings className="h-4 w-4" /> Edit Portal</button>
-                <button onClick={exportPortal} className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-900/20 active:scale-95"><Download className="h-4 w-4" /> Export Portal HTML</button>
-                <button onClick={() => exportPackage()} className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg active:scale-95 dark:bg-blue-500 dark:text-white"><PackageCheck className="h-4 w-4" /> Download Package</button>
-              </div>
-            </SectionCard>
-          </div>
-        )}
-
-        {view === 'signup' && (
-          <SectionCard title="Visitor signup / indication of interest" eyebrow="The intake flow the portal points to">
-            <div className="mb-5 rounded-3xl border border-blue-200 bg-blue-50 p-5 text-sm font-bold leading-6 text-blue-950 dark:border-blue-400/30 dark:bg-blue-500/10 dark:text-blue-100">
-              This form records a non-binding indication of interest for owner review. In a static exported portal, the call-to-action prepares an email to the owner. A later hosted version can save submissions directly to the owner dashboard.
-            </div>
-            <div className="grid gap-4">
-              <Field label="Supporter type">
-                <select className={inputBase} value={form.supporterType} onChange={(e) => updateForm({ supporterType: e.target.value as SupporterType })}>
-                  <option value="individual">Individual</option>
-                  <option value="business">Business contact</option>
-                  <option value="entity">Investment entity</option>
-                  <option value="lender">Private lender</option>
-                  <option value="other">Other</option>
-                </select>
-              </Field>
-              <Field label="Full name"><input className={inputBase} value={form.fullName} onChange={(e) => updateForm({ fullName: e.target.value })} /></Field>
-              <Field label="Email"><input className={inputBase} type="email" value={form.email} onChange={(e) => updateForm({ email: e.target.value })} /></Field>
-              <Field label="Phone"><input className={inputBase} value={form.phone} onChange={(e) => updateForm({ phone: e.target.value })} /></Field>
-              <Field label="City / State"><input className={inputBase} value={form.cityState} onChange={(e) => updateForm({ cityState: e.target.value })} /></Field>
-              <Field label="Organization / entity"><input className={inputBase} value={form.organization} onChange={(e) => updateForm({ organization: e.target.value })} /></Field>
-              <Field label="Proposed amount"><input className={inputBase} inputMode="numeric" value={form.proposedAmount} onChange={(e) => updateForm({ proposedAmount: e.target.value })} /></Field>
-              <Field label="Timing"><input className={inputBase} value={form.timing} onChange={(e) => updateForm({ timing: e.target.value })} /></Field>
-            </div>
-            <div className="mt-4 grid gap-4">
-              <Field label="Relationship to owner / business"><textarea className={`${inputBase} min-h-24`} value={form.relationship} onChange={(e) => updateForm({ relationship: e.target.value })} /></Field>
-              <Field label="Message / questions"><textarea className={`${inputBase} min-h-28`} value={form.message} onChange={(e) => updateForm({ message: e.target.value })} /></Field>
-            </div>
-            <div className="mt-5 grid gap-3">
-              <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-bold leading-6 text-slate-700 dark:border-white/10 dark:bg-slate-950/50 dark:text-slate-200">
-                <input type="checkbox" className="mt-1 h-5 w-5" checked={form.wantsPackage} onChange={(e) => updateForm({ wantsPackage: e.target.checked })} />
-                I would like to receive the private package or next-step details.
-              </label>
-              <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-bold leading-6 text-slate-700 dark:border-white/10 dark:bg-slate-950/50 dark:text-slate-200">
-                <input type="checkbox" className="mt-1 h-5 w-5" checked={form.understandsReview} onChange={(e) => updateForm({ understandsReview: e.target.checked })} />
-                I understand this is a non-binding indication of interest and is subject to owner/company review, final documents, and applicable rules.
-              </label>
-              <Field label="Typed name"><input className={inputBase} value={form.typedName} onChange={(e) => updateForm({ typedName: e.target.value })} /></Field>
-            </div>
-            <div className="mt-6 flex flex-wrap gap-3 border-t border-slate-200 pt-5 dark:border-white/10">
-              <button disabled={!canSubmit} onClick={saveLead} className={`inline-flex items-center gap-2 rounded-2xl px-5 py-4 text-sm font-black shadow-lg active:scale-95 ${canSubmit ? 'bg-blue-600 text-white shadow-blue-900/20' : 'bg-slate-200 text-slate-500 dark:bg-white/10 dark:text-slate-400'}`}><Send className="h-4 w-4" /> Save Interest</button>
-              <button onClick={() => exportPackage(form)} className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-950 shadow-lg active:scale-95 dark:border-white/10 dark:bg-slate-900 dark:text-white"><Download className="h-4 w-4" /> Download Draft Package</button>
-            </div>
-          </SectionCard>
-        )}
-
-        {view === 'submissions' && (
-          <SectionCard title="Owner lead review" eyebrow="Submissions and exports">
-            <div className="mb-5 flex flex-wrap gap-3">
-              <button onClick={exportLeadsCsv} className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-900/20 active:scale-95"><Download className="h-4 w-4" /> Export CSV</button>
-              <button onClick={() => downloadTextFile(`${slugify(settings.businessName)}-raise-leads.json`, JSON.stringify(leads, null, 2), 'application/json;charset=utf-8')} className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-950 shadow-lg active:scale-95 dark:border-white/10 dark:bg-slate-900 dark:text-white"><Download className="h-4 w-4" /> Export JSON</button>
-            </div>
-            <div className="grid gap-4">
-              {leads.map((lead) => (
-                <div key={lead.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50">
-                  <div className="flex flex-col gap-4">
-                    <div>
-                      <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">{lead.status}</p>
-                      <h3 className="mt-1 text-xl font-black text-slate-950 dark:text-white">{lead.fullName}</h3>
-                      <div className="mt-3 grid gap-2 text-sm font-bold text-slate-700 dark:text-slate-200">
-                        <span className="inline-flex items-center gap-2"><Mail className="h-4 w-4" /> {lead.email}</span>
-                        <span className="inline-flex items-center gap-2"><Phone className="h-4 w-4" /> {lead.phone || 'No phone'}</span>
-                        <span><strong>Amount:</strong> {money(lead.proposedAmount)}</span>
-                        <span><strong>Type:</strong> {lead.supporterType}</span>
-                        <span><strong>Organization:</strong> {lead.organization || 'Individual'}</span>
-                        <span><strong>Submitted:</strong> {formatDate(lead.submittedAt)}</span>
-                      </div>
-                      {lead.message && <p className="mt-3 text-sm font-bold leading-6 text-slate-600 dark:text-slate-300">{lead.message}</p>}
-                    </div>
-                    <div className="flex flex-col gap-2 sm:min-w-56">
-                      <select className={inputBase} value={lead.status} onChange={(e) => updateLeadStatus(lead.id, e.target.value as LeadStatus)}>
-                        {['new', 'reviewing', 'package-sent', 'approved', 'declined', 'funded'].map((status) => <option key={status} value={status}>{status}</option>)}
-                      </select>
-                      <button onClick={() => exportPackage(lead)} className="rounded-2xl bg-blue-600 px-4 py-3 text-sm font-black text-white shadow-lg shadow-blue-900/20 active:scale-95">Download Package</button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </SectionCard>
-        )}
-
-        {view === 'package' && (
-          <SectionCard title="Downloadable supporter / investor package" eyebrow="The file the owner can send after interest">
-            <div className="grid gap-5">
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50">
-                <p className="text-sm font-bold leading-7 text-slate-700 dark:text-slate-200">The package is generated from the full portal builder fields. It gives the owner a clean file to send after a person asks for details.</p>
-                <div className="mt-5 grid gap-3 text-sm font-bold text-slate-700 dark:text-slate-200">
-                  <p><strong>Business:</strong> {settings.businessName}</p>
-                  <p><strong>Template:</strong> {settings.offerLabel}</p>
-                  <p><strong>Goal:</strong> {money(settings.fundingGoal)}</p>
-                  <p><strong>Minimum interest:</strong> {money(settings.minimumInterest)}</p>
-                  <p><strong>Deadline:</strong> {formatDate(settings.deadline)}</p>
-                </div>
-                <button onClick={() => exportPackage()} className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-900/20 active:scale-95"><Download className="h-4 w-4" /> Download Package</button>
-              </div>
-              <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm font-bold leading-7 text-amber-950 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-100">
-                <FileText className="mb-3 h-7 w-7" />
-                The package is not a final legal agreement. It is a professional summary file for review, follow-up, advisor discussion, and owner-controlled private funding organization.
-              </div>
-            </div>
-          </SectionCard>
-        )}
-
-        {view === 'guide' && (
-          <div className="grid gap-6">
-            <SectionCard title="What changed in V1.4" eyebrow="Product direction">
-              <div className="grid gap-4">
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50"><Globe2 className="mb-3 h-7 w-7 text-blue-600" /><h3 className="text-lg font-black text-slate-950 dark:text-white">Full-Width Mobile Portal</h3><p className="mt-2 text-sm font-bold leading-6 text-slate-700 dark:text-slate-200">Preview now renders a full-width, one-column mobile investor/supporter portal instead of a narrow framed summary.</p></div>
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50"><Landmark className="mb-3 h-7 w-7 text-blue-600" /><h3 className="text-lg font-black text-slate-950 dark:text-white">Premium Portal Template</h3><p className="mt-2 text-sm font-bold leading-6 text-slate-700 dark:text-slate-200">The first template follows a serious investor-portal structure: offer, why now, model, proof, market, process, package request, and signup.</p></div>
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50"><Download className="mb-3 h-7 w-7 text-blue-600" /><h3 className="text-lg font-black text-slate-950 dark:text-white">Exportable Page</h3><p className="mt-2 text-sm font-bold leading-6 text-slate-700 dark:text-slate-200">The exported static HTML now uses the same full-width, one-column portal structure.</p></div>
-              </div>
-            </SectionCard>
-            <SectionCard title="Recommended buyer workflow" eyebrow="How the owner uses it">
-              <ol className="space-y-3 text-base font-bold leading-7 text-slate-700 dark:text-slate-200">
-                <li>1. Choose the Premium Investor Portal template for a serious private raise, or use Startup / Local Business for a more specific buyer type.</li>
-                <li>2. Enter the business identity, founder details, headline, offer, investment thesis, why-now story, proof, market logic, use of funds, terms, and process.</li>
-                <li>3. Open Preview and review the full investor portal as a visitor would see it.</li>
-                <li>4. Export the static portal HTML and upload it to GitHub Pages, Cloudflare Pages, Netlify, or the owner website.</li>
-                <li>5. Share the link with selected private contacts and collect non-binding indications of interest.</li>
-                <li>6. Export leads or move serious records into MONIEZI Pro Finance for owner-side tracking.</li>
-              </ol>
-            </SectionCard>
-          </div>
-        )}
-      </main>
-
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 px-2 py-3 shadow-2xl backdrop-blur dark:border-white/10 dark:bg-slate-950/95 lg:hidden">
-        <div className="grid grid-cols-6 gap-1">
-          {navItems.map(([key, Icon, label]) => (
-            <button key={key} onClick={() => setView(key)} className={`rounded-2xl px-1 py-2 text-[10px] font-black ${view === key ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20 dark:bg-blue-500 dark:text-white' : 'text-slate-700 dark:text-slate-200'}`}>
-              <Icon className="mx-auto h-5 w-5" />
-              <span className="mt-1 block leading-tight">{label}</span>
+          <button onClick={saveStamp} className="rounded-2xl bg-slate-950 px-4 py-3 text-xs font-black text-white shadow-lg active:scale-95 dark:bg-blue-500">
+            Save
+          </button>
+        </div>
+        <nav className="mt-4 grid grid-cols-3 gap-2">
+          {([
+            ['build', 'Build'],
+            ['preview', 'Preview'],
+            ['export', 'Export'],
+          ] as Array<[BuilderView, string]>).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setView(key)}
+              className={`rounded-2xl px-3 py-3 text-xs font-black uppercase tracking-[0.12em] transition active:scale-95 ${
+                view === key ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300'
+              }`}
+            >
+              {label}
             </button>
           ))}
-        </div>
-      </div>
+        </nav>
+      </header>
+
+      {view === 'build' && (
+        <main className="w-full">
+          <section className="w-full bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,.22),_transparent_36%),linear-gradient(180deg,#ffffff,#eff6ff)] px-5 py-8 dark:bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,.25),_transparent_36%),linear-gradient(180deg,#020617,#0f172a)] sm:px-8 lg:px-10">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">One job only</p>
+            <h1 className="mt-3 text-4xl font-black leading-none tracking-[-0.055em] sm:text-6xl">Build a premium investor portal for your business.</h1>
+            <p className="mt-5 text-base font-bold leading-8 text-slate-600 dark:text-slate-300">
+              Fill the guided template, preview the investor-facing page, attach a fillable agreement or funding document, and export a shareable portal. This builder is for the owner’s investor portal — nothing else.
+            </p>
+            <div className="mt-6 rounded-[1.5rem] border border-blue-200 bg-white/80 p-4 dark:border-blue-400/20 dark:bg-white/5">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-sm font-black text-slate-700 dark:text-slate-200">Portal readiness</span>
+                <span className="text-sm font-black text-blue-600 dark:text-blue-300">{visibleProgress}%</span>
+              </div>
+              <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
+                <div className="h-full rounded-full bg-blue-600" style={{ width: `${visibleProgress}%` }} />
+              </div>
+              {savedAt && <p className="mt-3 text-xs font-bold text-slate-500 dark:text-slate-400">Saved at {savedAt}</p>}
+            </div>
+          </section>
+
+          <BuilderSection number="01" title="Choose the portal template" subtitle="Start with the type of investor portal the business owner wants to create. The buyer can change all wording after choosing a template.">
+            <Guidance
+              title="What this choice controls"
+              bullets={[
+                'Use Premium Investor Portal for the broadest polished private-round page.',
+                'Use Startup / SAFE Portal when the buyer needs startup-style investor language and agreement workflow.',
+                'Use Local Business Expansion Portal when the buyer raises for equipment, vehicles, crews, materials, working capital, or growth capacity.',
+              ]}
+            />
+            <div className="grid gap-4">
+              {templates.map((template) => (
+                <TemplateButton key={template.key} template={template} active={settings.templateKey === template.key} onClick={() => selectTemplate(template.key)} />
+              ))}
+            </div>
+          </BuilderSection>
+
+          <BuilderSection number="02" title="Company identity" subtitle="This information appears in the portal header, footer, investor document area, and contact sections.">
+            <Guidance
+              title="Fill this like a real investor page"
+              bullets={[
+                'Use the public-facing company name investors should recognize.',
+                'Add the legal name if documents will be signed under a different formal entity name.',
+                'Use a direct email that investors can verify before sending documents or funds.',
+              ]}
+            />
+            <div className="grid gap-5">
+              <Field label="Company / business name" hint="Example: Northside Roofing & Repair or Apex Growth Systems."><input className={inputClass} value={settings.companyName} onChange={(e) => update({ companyName: e.target.value })} /></Field>
+              <Field label="Legal entity name" hint="Use the formal entity name that appears on agreements, if different."><input className={inputClass} value={settings.legalName} onChange={(e) => update({ legalName: e.target.value })} /></Field>
+              <Field label="Founder / owner name"><input className={inputClass} value={settings.founderName} onChange={(e) => update({ founderName: e.target.value })} /></Field>
+              <Field label="Founder / owner title"><input className={inputClass} value={settings.founderTitle} onChange={(e) => update({ founderTitle: e.target.value })} /></Field>
+              <Field label="Contact email"><input className={inputClass} type="email" value={settings.contactEmail} onChange={(e) => update({ contactEmail: e.target.value })} /></Field>
+              <Field label="Contact phone"><input className={inputClass} value={settings.contactPhone} onChange={(e) => update({ contactPhone: e.target.value })} /></Field>
+              <Field label="Website"><input className={inputClass} value={settings.website} onChange={(e) => update({ website: e.target.value })} /></Field>
+              <Field label="Location"><input className={inputClass} value={settings.location} onChange={(e) => update({ location: e.target.value })} /></Field>
+            </div>
+            <div className="grid gap-4">
+              <UploadBox title="Upload company logo" subtitle="Optional. This appears in the portal header and makes the page feel less generic." accept="image/*" onFile={(file) => handleUpload(file, 'logo')} />
+              <UploadBox title="Upload hero image" subtitle="Optional. Use a product, service, business, project, or founder image. Large videos can come later; image support is safer for now." accept="image/*" onFile={(file) => handleUpload(file, 'hero')} />
+            </div>
+          </BuilderSection>
+
+          <BuilderSection number="03" title="Investor portal hero" subtitle="This is the first screen investors see. It should sound clear, serious, and specific.">
+            <Guidance
+              title="Write the opening like an investor portal, not a flyer"
+              bullets={[
+                'The headline should say what kind of opportunity this is and why the business deserves review.',
+                'The subheadline should explain what investors will learn on the page.',
+                'Avoid vague claims like “great opportunity.” Be specific about the business, round, and next step.',
+              ]}
+            />
+            <div className="grid gap-5">
+              <Field label="Small eyebrow above headline"><input className={inputClass} value={settings.portalEyebrow} onChange={(e) => update({ portalEyebrow: e.target.value })} /></Field>
+              <Field label="Main portal headline"><textarea className={textAreaClass} value={settings.headline} onChange={(e) => update({ headline: e.target.value })} /></Field>
+              <Field label="Subheadline"><textarea className={textAreaClass} value={settings.subheadline} onChange={(e) => update({ subheadline: e.target.value })} /></Field>
+              <Field label="Primary button text"><input className={inputClass} value={settings.primaryCta} onChange={(e) => update({ primaryCta: e.target.value })} /></Field>
+              <Field label="Agreement download button text"><input className={inputClass} value={settings.secondaryCta} onChange={(e) => update({ secondaryCta: e.target.value })} /></Field>
+            </div>
+          </BuilderSection>
+
+          <BuilderSection number="04" title="Raise snapshot" subtitle="These values appear as high-visibility investor metrics on the portal.">
+            <Guidance
+              title="Keep the numbers understandable"
+              bullets={[
+                'Funding goal should be the amount the owner is trying to organize interest around.',
+                'Minimum interest is not a guaranteed minimum investment; it is a suggested review amount.',
+                'Round type should match the document strategy: SAFE, private loan, revenue-share, profit-share, or advisor-reviewed agreement.',
+              ]}
+            />
+            <div className="grid gap-5">
+              <Field label="Funding goal"><input className={inputClass} inputMode="numeric" value={settings.fundingGoal} onChange={(e) => update({ fundingGoal: e.target.value })} /></Field>
+              <Field label="Minimum interest"><input className={inputClass} inputMode="numeric" value={settings.minimumInterest} onChange={(e) => update({ minimumInterest: e.target.value })} /></Field>
+              <Field label="Deadline"><input className={inputClass} type="date" value={settings.deadline} onChange={(e) => update({ deadline: e.target.value })} /></Field>
+              <Field label="Portal raise label"><input className={inputClass} value={settings.raiseLabel} onChange={(e) => update({ raiseLabel: e.target.value })} /></Field>
+              <Field label="Round / agreement structure"><textarea className={textAreaClass} value={settings.roundType} onChange={(e) => update({ roundType: e.target.value })} /></Field>
+            </div>
+          </BuilderSection>
+
+          <BuilderSection number="05" title="Investment story" subtitle="This is the core of the portal. It gives investors enough substance to understand what they are reviewing.">
+            <Guidance
+              title="Each answer should sell one part of the business case"
+              bullets={[
+                'Business overview explains what the company does and who it serves.',
+                'Investor thesis explains why this business could be worth reviewing.',
+                'Why now explains why the funding should happen now instead of someday.',
+                'Proof points show evidence: revenue, customers, jobs, prototype, owner experience, assets, relationships, or readiness.',
+              ]}
+            />
+            <div className="grid gap-5">
+              <Field label="Business overview"><textarea className={textAreaClass} value={settings.businessOverview} onChange={(e) => update({ businessOverview: e.target.value })} /></Field>
+              <Field label="Investor thesis"><textarea className={textAreaClass} value={settings.investorThesis} onChange={(e) => update({ investorThesis: e.target.value })} /></Field>
+              <Field label="Why now"><textarea className={textAreaClass} value={settings.whyNow} onChange={(e) => update({ whyNow: e.target.value })} /></Field>
+              <Field label="Business model"><textarea className={textAreaClass} value={settings.businessModel} onChange={(e) => update({ businessModel: e.target.value })} /></Field>
+              <Field label="Proof / readiness"><textarea className={textAreaClass} value={settings.proofPoints} onChange={(e) => update({ proofPoints: e.target.value })} /></Field>
+              <Field label="Use of funds"><textarea className={textAreaClass} value={settings.useOfFunds} onChange={(e) => update({ useOfFunds: e.target.value })} /></Field>
+              <Field label="Market opportunity"><textarea className={textAreaClass} value={settings.marketOpportunity} onChange={(e) => update({ marketOpportunity: e.target.value })} /></Field>
+            </div>
+          </BuilderSection>
+
+          <BuilderSection number="06" title="Terms, process, and agreement" subtitle="This section controls the investor agreement download area and the next-step instructions.">
+            <Guidance
+              title="Use careful language"
+              bullets={[
+                'Describe the proposed structure without promising acceptance, return, equity, or automatic participation.',
+                'Use “non-binding indication of interest,” “owner review,” “final documents,” and “advisor-reviewed agreement” where appropriate.',
+                'Upload the actual fillable PDF or document investors should download, sign, and return by email when the owner is ready.',
+              ]}
+            />
+            <div className="grid gap-5">
+              <Field label="Terms summary"><textarea className={textAreaClass} value={settings.termsSummary} onChange={(e) => update({ termsSummary: e.target.value })} /></Field>
+              <Field label="Investor process"><textarea className={textAreaClass} value={settings.investorProcess} onChange={(e) => update({ investorProcess: e.target.value })} /></Field>
+              <Field label="Agreement title"><input className={inputClass} value={settings.agreementTitle} onChange={(e) => update({ agreementTitle: e.target.value })} /></Field>
+              <Field label="Agreement summary"><textarea className={textAreaClass} value={settings.agreementSummary} onChange={(e) => update({ agreementSummary: e.target.value })} /></Field>
+              <UploadBox
+                title="Upload agreement / SAFE / funding document"
+                subtitle="Optional but important. Upload the fillable PDF or document investors can download from the portal. For V1.5, this embeds the file in the exported HTML. Very large files should be avoided."
+                accept=".pdf,.doc,.docx,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                fileName={settings.agreementFileName}
+                onFile={(file) => handleUpload(file, 'agreement')}
+              />
+              <Field label="Risk / review notice"><textarea className={textAreaClass} value={settings.riskNotice} onChange={(e) => update({ riskNotice: e.target.value })} /></Field>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <button onClick={() => setView('preview')} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-4 text-sm font-black text-white shadow-xl shadow-blue-900/20 active:scale-95"><Eye className="h-4 w-4" /> Preview investor portal</button>
+              <button onClick={exportPortal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-xl active:scale-95 dark:bg-blue-500"><Download className="h-4 w-4" /> Export portal HTML</button>
+              <button onClick={exportProfile} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-950 shadow-xl active:scale-95 dark:border-white/10 dark:bg-slate-900 dark:text-white"><Save className="h-4 w-4" /> Export builder profile</button>
+            </div>
+          </BuilderSection>
+        </main>
+      )}
+
+      {view === 'preview' && (
+        <main className="w-full">
+          <section className="w-full border-b border-slate-200 bg-white px-5 py-5 dark:border-white/10 dark:bg-slate-900 sm:px-8 lg:px-10">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">Investor-facing output</p>
+            <h1 className="mt-2 text-3xl font-black tracking-[-0.04em]">Preview the portal your buyer will share.</h1>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <button onClick={() => setView('build')} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-950 shadow-lg active:scale-95 dark:border-white/10 dark:bg-slate-950 dark:text-white"><PenLine className="h-4 w-4" /> Edit builder</button>
+              <button onClick={exportPortal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-900/20 active:scale-95"><Download className="h-4 w-4" /> Export portal</button>
+            </div>
+          </section>
+          <InvestorPortal settings={settings} />
+        </main>
+      )}
+
+      {view === 'export' && (
+        <main className="w-full">
+          <section className="w-full bg-white px-5 py-8 dark:bg-slate-900 sm:px-8 lg:px-10">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">Export center</p>
+            <h1 className="mt-3 text-4xl font-black leading-none tracking-[-0.055em] sm:text-5xl">Download the buyer’s investor portal materials.</h1>
+            <p className="mt-5 text-base font-bold leading-8 text-slate-600 dark:text-slate-300">
+              V1.5 exports the investor-facing portal as a single static HTML file. It also exports the builder profile and a text funding package. If an agreement file was uploaded, the exported portal includes a download button for that document.
+            </p>
+            <div className="mt-8 grid gap-4">
+              <button onClick={exportPortal} className="flex items-center justify-between gap-4 rounded-[2rem] bg-blue-600 p-5 text-left text-white shadow-xl shadow-blue-900/20 active:scale-[0.99]"><span><strong className="block text-xl">Export investor portal HTML</strong><span className="mt-1 block text-sm font-bold text-blue-100">The finished page the business owner can upload or share.</span></span><Download className="h-6 w-6" /></button>
+              <button onClick={exportPackage} className="flex items-center justify-between gap-4 rounded-[2rem] border border-slate-200 bg-white p-5 text-left text-slate-950 shadow-xl shadow-slate-200/70 active:scale-[0.99] dark:border-white/10 dark:bg-slate-950 dark:text-white dark:shadow-black/20"><span><strong className="block text-xl">Download funding package text</strong><span className="mt-1 block text-sm font-bold text-slate-500 dark:text-slate-300">A clean internal package summary from the builder content.</span></span><FileText className="h-6 w-6" /></button>
+              <button onClick={exportProfile} className="flex items-center justify-between gap-4 rounded-[2rem] border border-slate-200 bg-white p-5 text-left text-slate-950 shadow-xl shadow-slate-200/70 active:scale-[0.99] dark:border-white/10 dark:bg-slate-950 dark:text-white dark:shadow-black/20"><span><strong className="block text-xl">Export builder profile JSON</strong><span className="mt-1 block text-sm font-bold text-slate-500 dark:text-slate-300">Save or move the owner’s portal settings.</span></span><ClipboardList className="h-6 w-6" /></button>
+              {settings.agreementDataUrl && (
+                <a href={settings.agreementDataUrl} download={settings.agreementFileName || 'investor-agreement'} className="flex items-center justify-between gap-4 rounded-[2rem] border border-slate-200 bg-white p-5 text-left text-slate-950 shadow-xl shadow-slate-200/70 active:scale-[0.99] dark:border-white/10 dark:bg-slate-950 dark:text-white dark:shadow-black/20">
+                  <span><strong className="block text-xl">Download uploaded agreement</strong><span className="mt-1 block text-sm font-bold text-slate-500 dark:text-slate-300">{settings.agreementFileName}</span></span><Download className="h-6 w-6" />
+                </a>
+              )}
+            </div>
+          </section>
+        </main>
+      )}
     </div>
   );
 }
