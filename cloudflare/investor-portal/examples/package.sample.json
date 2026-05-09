@@ -1,10 +1,10 @@
 {
   "schemaVersion": "moniezi-investor-portal-v1",
   "company": {
-    "legalName": "EMYRGEN GROUP INC.",
+    "legalName": "Sample Growth Company LLC",
     "stateOfIncorporation": "Wyoming",
-    "slug": "emyrgen-group",
-    "issuerName": "Eli Green",
+    "slug": "sample-growth-company",
+    "issuerName": "Alex Founder",
     "adminEmail": "issuer@example.com"
   },
   "package": {

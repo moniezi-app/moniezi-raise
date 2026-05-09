@@ -4,10 +4,10 @@
 */
 
 // Bump this on every deploy
-// MONIEZI Raise V1.3.1: full investor portal builder, EMYRGEN-style template, richer preview, and static portal export.
+// MONIEZI Raise V1.4: premium mobile portal builder, full-width one-column preview, and static portal export.
 // The previous "no precache" change prevented the app shell from being available
 // when offline at cold start.
-const CACHE_VERSION = "moniezi-raise-v1-3-1-full-investor-portal-template-2026-05-09";
+const CACHE_VERSION = "moniezi-raise-v1-4-premium-mobile-portal-builder-2026-05-09";
 const CACHE_NAME = `moniezi-cache-${CACHE_VERSION}`;
 
 // Resolve an asset relative to the service worker scope

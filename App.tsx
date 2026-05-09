@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 
 type ViewKey = 'build' | 'portal' | 'signup' | 'submissions' | 'package' | 'guide';
-type TemplateKey = 'emyrgen' | 'startup' | 'local';
+type TemplateKey = 'premium' | 'startup' | 'local';
 type RaiseMode = 'startup' | 'local';
 type LeadStatus = 'new' | 'reviewing' | 'package-sent' | 'approved' | 'declined' | 'funded';
 type SupporterType = 'individual' | 'business' | 'entity' | 'lender' | 'other';
@@ -110,10 +110,10 @@ interface RowCard {
   tags: string[];
 }
 
-const STORAGE_KEY = 'moniezi-raise-v1-3-1-state';
+const STORAGE_KEY = 'moniezi-raise-v1-4-state';
 
-const emyrgenStyleTemplate: RaiseSettings = {
-  templateKey: 'emyrgen',
+const premiumPortalTemplate: RaiseSettings = {
+  templateKey: 'premium',
   raiseMode: 'startup',
   businessName: 'Apex Mission Systems',
   legalName: 'Apex Mission Systems, Inc.',
@@ -124,11 +124,11 @@ const emyrgenStyleTemplate: RaiseSettings = {
   website: 'https://example.com',
   location: 'United States',
   logoDataUrl: '',
-  heroEyebrow: 'Private round · Investor portal template',
+  heroEyebrow: 'Private round · Premium investor portal',
   portalHeadline: 'Back the company building a repeatable mission platform',
   portalSubtitle:
     'A professional private investor portal for selected contacts. Review the company story, investment case, use of funds, process, and next step before submitting a non-binding indication of interest.',
-  offerLabel: 'EMYRGEN-style investor portal',
+  offerLabel: 'Premium private investor portal',
   roundType: 'Private founder round',
   fundingGoal: '250000',
   minimumInterest: '5000',
@@ -178,7 +178,7 @@ const emyrgenStyleTemplate: RaiseSettings = {
 };
 
 const startupTemplate: RaiseSettings = {
-  ...emyrgenStyleTemplate,
+  ...premiumPortalTemplate,
   templateKey: 'startup',
   raiseMode: 'startup',
   businessName: 'Acme Growth Labs',
@@ -200,7 +200,7 @@ const startupTemplate: RaiseSettings = {
 };
 
 const localTemplate: RaiseSettings = {
-  ...emyrgenStyleTemplate,
+  ...premiumPortalTemplate,
   templateKey: 'local',
   raiseMode: 'local',
   businessName: 'Northside Roofing & Repair',
@@ -359,14 +359,17 @@ const parseCards = (value: string): RowCard[] =>
 function loadState(): AppState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { settings: emyrgenStyleTemplate, leads: demoLeads };
+    if (!raw) return { settings: premiumPortalTemplate, leads: demoLeads };
     const parsed = JSON.parse(raw) as Partial<AppState>;
+    const settings = { ...premiumPortalTemplate, ...(parsed.settings || {}) } as RaiseSettings;
+    if ((settings as any).templateKey === 'emyrgen') settings.templateKey = 'premium';
+    if (settings.offerLabel.toLowerCase().includes('emyrgen')) settings.offerLabel = 'Premium private investor portal';
     return {
-      settings: { ...emyrgenStyleTemplate, ...(parsed.settings || {}) },
+      settings,
       leads: Array.isArray(parsed.leads) ? parsed.leads : demoLeads,
     };
   } catch {
-    return { settings: emyrgenStyleTemplate, leads: demoLeads };
+    return { settings: premiumPortalTemplate, leads: demoLeads };
   }
 }
 
@@ -393,7 +396,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function SectionCard({ title, eyebrow, children }: { title: string; eyebrow?: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/70 dark:border-white/10 dark:bg-slate-900/75 dark:shadow-black/20 sm:p-7">
+    <section className="w-full border-y border-slate-200 bg-white px-0 py-6 shadow-none dark:border-white/10 dark:bg-slate-900/75">
       {eyebrow && <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">{eyebrow}</p>}
       <h2 className="text-2xl font-black tracking-tight text-slate-950 dark:text-white">{title}</h2>
       <div className="mt-5">{children}</div>
@@ -421,7 +424,7 @@ function TemplateButton({ active, title, subtitle, icon: Icon, onClick }: { acti
   return (
     <button
       onClick={onClick}
-      className={`rounded-3xl border p-5 text-left shadow-lg transition active:scale-[0.99] ${
+      className={`w-full rounded-3xl border p-5 text-left shadow-lg transition active:scale-[0.99] ${
         active
           ? 'border-blue-500 bg-blue-50 text-slate-950 shadow-blue-900/10 dark:border-blue-400 dark:bg-blue-500/15 dark:text-white'
           : 'border-slate-200 bg-white text-slate-900 shadow-slate-200/60 hover:border-blue-300 dark:border-white/10 dark:bg-slate-950/60 dark:text-white dark:shadow-black/20'
@@ -470,9 +473,9 @@ function MiniCard({ card }: { card: RowCard }) {
 
 function PortalSection({ eyebrow, title, summary, children }: { eyebrow: string; title: string; summary: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70 dark:border-white/10 dark:bg-slate-900/75 dark:shadow-black/20 lg:p-8">
+    <section className="border-y border-slate-200 bg-white px-4 py-7 shadow-none dark:border-white/10 dark:bg-slate-900/75">
       <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">{eyebrow}</p>
-      <div className="mt-3 grid gap-4 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+      <div className="mt-3 grid gap-4">
         <h2 className="text-3xl font-black leading-tight tracking-[-0.045em] text-slate-950 dark:text-white sm:text-5xl">{title}</h2>
         <p className="text-base font-bold leading-8 text-slate-600 dark:text-slate-200">{summary}</p>
       </div>
@@ -489,8 +492,8 @@ function PortalPreview({ settings, onSignup }: { settings: RaiseSettings; onSign
   const processCards = parseCards(settings.processSteps);
 
   return (
-    <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-gradient-to-b from-blue-50 via-white to-white shadow-2xl shadow-slate-200/80 dark:border-white/10 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950 dark:shadow-black/30">
-      <div className="flex flex-col gap-4 border-b border-slate-200 bg-white/75 p-5 backdrop-blur dark:border-white/10 dark:bg-slate-950/70 sm:flex-row sm:items-center sm:justify-between">
+    <div className="w-full overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white shadow-none dark:from-slate-900 dark:via-slate-950 dark:to-slate-950">
+      <div className="flex flex-col gap-4 border-b border-slate-200 bg-white/75 p-5 backdrop-blur dark:border-white/10 dark:bg-slate-950/70 sm:justify-between">
         <div className="flex items-center gap-3">
           <LogoMark settings={settings} />
           <div>
@@ -507,8 +510,8 @@ function PortalPreview({ settings, onSignup }: { settings: RaiseSettings; onSign
         </div>
       </div>
 
-      <div className="grid gap-6 p-5 lg:grid-cols-[1.05fr_.95fr] lg:p-8">
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70 dark:border-white/10 dark:bg-white/5 dark:shadow-black/20 lg:p-8">
+      <div className="grid gap-0 p-0">
+        <div className="border-y border-slate-200 bg-white px-4 py-7 shadow-none dark:border-white/10 dark:bg-white/5">
           <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">{settings.heroEyebrow}</p>
           <h1 className="mt-4 text-4xl font-black leading-[0.95] tracking-[-0.055em] text-slate-950 dark:text-white sm:text-6xl lg:text-7xl">{settings.portalHeadline}</h1>
           <p className="mt-5 text-lg font-bold leading-8 text-slate-600 dark:text-slate-200">{settings.portalSubtitle}</p>
@@ -522,11 +525,11 @@ function PortalPreview({ settings, onSignup }: { settings: RaiseSettings; onSign
           </div>
         </div>
 
-        <aside className="rounded-[2rem] bg-slate-950 p-6 text-white shadow-xl shadow-slate-950/20 lg:p-8">
+        <aside className="bg-slate-950 px-4 py-7 text-white shadow-none">
           <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-300">The offer</p>
           <h2 className="mt-3 text-3xl font-black tracking-tight">What investors are reviewing</h2>
           <p className="mt-4 text-base font-bold leading-7 text-slate-300">{settings.opportunitySummary}</p>
-          <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="mt-6 grid gap-3">
             <PortalMetric label="Goal" value={money(settings.fundingGoal)} />
             <PortalMetric label="Minimum" value={money(settings.minimumInterest)} />
             <PortalMetric label="Deadline" value={formatDate(settings.deadline)} />
@@ -535,9 +538,9 @@ function PortalPreview({ settings, onSignup }: { settings: RaiseSettings; onSign
         </aside>
       </div>
 
-      <div className="grid gap-6 p-5 pt-0 lg:p-8 lg:pt-0">
+      <div className="grid gap-0 p-0">
         <PortalSection eyebrow="Investment case" title="What investors are buying into" summary={settings.investmentThesis}>
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="grid gap-4">
             <MiniCard card={{ eyebrow: 'Business', title: settings.businessName, body: settings.businessSummary, tags: [settings.location, settings.roundType] }} />
             <MiniCard card={{ eyebrow: 'Use of funds', title: 'Capital tied to milestones', body: settings.useOfFunds, tags: ['Funding Plan', 'Execution'] }} />
             <MiniCard card={{ eyebrow: 'Terms', title: settings.offerLabel, body: settings.termsSummary, tags: ['Owner Review', 'Final Docs'] }} />
@@ -545,31 +548,31 @@ function PortalPreview({ settings, onSignup }: { settings: RaiseSettings; onSign
         </PortalSection>
 
         <PortalSection eyebrow="Why now" title={settings.whyNowTitle} summary={settings.whyNowSummary}>
-          <div className="grid gap-4 lg:grid-cols-3">{whyCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
+          <div className="grid gap-4">{whyCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
         </PortalSection>
 
         <PortalSection eyebrow="Business model" title={settings.modelTitle} summary={settings.modelSummary}>
-          <div className="grid gap-4 lg:grid-cols-4">{modelCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
+          <div className="grid gap-4">{modelCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
         </PortalSection>
 
         <PortalSection eyebrow="Proof" title={settings.proofTitle} summary={settings.proofSummary}>
-          <div className="grid gap-4 lg:grid-cols-4">{proofCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
+          <div className="grid gap-4">{proofCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
         </PortalSection>
 
         <PortalSection eyebrow="Market opportunity" title={settings.marketTitle} summary={settings.marketSummary}>
-          <div className="grid gap-4 lg:grid-cols-4">{marketCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
+          <div className="grid gap-4">{marketCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
         </PortalSection>
 
         <PortalSection eyebrow="Investment process" title="From interest to approved participation" summary={settings.processSummary}>
-          <div className="grid gap-4 lg:grid-cols-3">{processCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
+          <div className="grid gap-4">{processCards.map((card) => <MiniCard key={`${card.eyebrow}-${card.title}`} card={card} />)}</div>
         </PortalSection>
 
-        <section className="rounded-[2rem] border border-amber-200 bg-amber-50 p-6 text-sm font-bold leading-7 text-amber-950 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-100 lg:p-8">
+        <section className="border-y border-amber-200 bg-amber-50 px-4 py-6 text-sm font-bold leading-7 text-amber-950 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-100">
           <strong>Important notice:</strong> {settings.riskNotice} {settings.wireNotice}
         </section>
 
-        <section className="rounded-[2rem] border border-slate-200 bg-slate-950 p-6 text-white shadow-xl shadow-slate-950/20 dark:border-white/10 lg:p-8">
-          <div className="grid gap-6 lg:grid-cols-[1fr_.8fr] lg:items-center">
+        <section className="bg-slate-950 px-4 py-7 text-white shadow-none dark:border-white/10">
+          <div className="grid gap-6">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-300">Investor signup</p>
               <h2 className="mt-3 text-4xl font-black tracking-[-0.04em]">Begin the private review</h2>
@@ -621,24 +624,24 @@ function buildPortalHtml(settings: RaiseSettings) {
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: linear-gradient(180deg, #eef5ff 0%, #f8fafc 42%, #ffffff 100%); color: var(--ink); }
-    .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 58px; }
-    .nav { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:34px; position:sticky; top:0; z-index:5; padding:14px 0; backdrop-filter: blur(16px); }
+    .wrap { width: 100%; max-width: none; margin: 0; padding: 0 0 58px; }
+    .nav { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:0; position:sticky; top:0; z-index:5; padding:14px 0; backdrop-filter: blur(16px); background:rgba(255,255,255,.88); border-bottom:1px solid rgba(226,232,240,.9); }
     .brand { display:flex; align-items:center; gap:14px; font-weight:950; } .mark { width:48px; height:48px; border-radius:18px; display:grid; place-items:center; color:white; background:linear-gradient(135deg,#3b82f6,#4338ca); box-shadow:0 18px 40px rgba(37,99,235,.25); }
     .links { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; } .links a { text-decoration:none; color:#334155; font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:.1em; padding:9px 12px; border-radius:999px; background:rgba(255,255,255,.78); border:1px solid rgba(226,232,240,.9); }
-    .hero { display:grid; grid-template-columns:1.06fr .94fr; gap:28px; align-items:stretch; }
+    .hero { display:grid; grid-template-columns:1fr; gap:0; align-items:stretch; }
     h1 { font-size:clamp(42px,7vw,82px); line-height:.92; margin:22px 0 18px; letter-spacing:-.065em; } h2 { font-size:clamp(30px,4.4vw,54px); line-height:1; letter-spacing:-.055em; margin:0; } h3 { margin:8px 0 10px; font-size:21px; letter-spacing:-.025em; }
     p { color:var(--muted); line-height:1.68; font-weight:680; } .lead { font-size:20px; color:#334155; max-width:760px; }
     .pill { display:inline-flex; align-items:center; border:1px solid rgba(37,99,235,.22); background:rgba(255,255,255,.75); padding:9px 13px; border-radius:999px; color:#1d4ed8; font-size:12px; font-weight:950; letter-spacing:.08em; text-transform:uppercase; }
-    .panel { background:rgba(255,255,255,.9); border:1px solid rgba(226,232,240,.9); border-radius:32px; padding:30px; box-shadow:0 30px 90px rgba(15,23,42,.1); } .dark { background:#0f172a; color:white; border-radius:32px; padding:30px; box-shadow:0 30px 90px rgba(15,23,42,.22); } .dark p { color:#cbd5e1; }
+    .panel { background:rgba(255,255,255,.96); border-top:1px solid rgba(226,232,240,.9); border-bottom:1px solid rgba(226,232,240,.9); border-radius:0; padding:26px 18px; box-shadow:none; } .dark { background:#0f172a; color:white; border-radius:0; padding:26px 18px; box-shadow:none; } .dark p { color:#cbd5e1; }
     .cta { display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; } .btn { border-radius:18px; padding:16px 21px; font-size:15px; font-weight:950; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; } .primary { color:white; background:var(--accent); box-shadow:0 18px 40px rgba(37,99,235,.25); } .secondary { color:#0f172a; background:white; border:1px solid #dbe3ef; }
-    .metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-top:24px; } .metric { border:1px solid rgba(226,232,240,.85); background:white; color:#0f172a; border-radius:22px; padding:18px; } .metric span, .card span { display:block; color:#64748b; font-size:11px; font-weight:950; letter-spacing:.14em; text-transform:uppercase; } .metric strong { display:block; margin-top:7px; font-size:24px; letter-spacing:-.03em; }
-    .section { margin-top:30px; } .section-head { display:grid; grid-template-columns:.85fr 1.15fr; gap:24px; margin-bottom:22px; } .section-head p { margin:0; font-size:17px; }
-    .grid3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; } .grid4 { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; }
-    .card { border:1px solid var(--line); background:white; border-radius:26px; padding:24px; box-shadow:0 16px 44px rgba(15,23,42,.06); } .card p { margin-bottom:0; }
+    .metrics { display:grid; grid-template-columns:1fr; gap:12px; margin-top:24px; } .metric { border:1px solid rgba(226,232,240,.85); background:white; color:#0f172a; border-radius:22px; padding:18px; } .metric span, .card span { display:block; color:#64748b; font-size:11px; font-weight:950; letter-spacing:.14em; text-transform:uppercase; } .metric strong { display:block; margin-top:7px; font-size:24px; letter-spacing:-.03em; }
+    .section { margin-top:0; } .section-head { display:grid; grid-template-columns:1fr; gap:18px; margin-bottom:22px; } .section-head p { margin:0; font-size:17px; }
+    .grid3 { display:grid; grid-template-columns:1fr; gap:16px; } .grid4 { display:grid; grid-template-columns:1fr; gap:16px; }
+    .card { border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:white; border-radius:0; padding:22px 18px; box-shadow:none; } .card p { margin-bottom:0; }
     .tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; } .tags b { border-radius:999px; background:#f1f5f9; color:#475569; padding:7px 10px; font-size:10px; letter-spacing:.08em; text-transform:uppercase; }
-    .notice { border:1px solid #fed7aa; background:#fff7ed; color:#7c2d12; border-radius:24px; padding:20px; font-weight:760; line-height:1.65; } .signup { background:#0f172a; color:white; border-radius:32px; padding:30px; } .signup p { color:#cbd5e1; }
+    .notice { border-top:1px solid #fed7aa; border-bottom:1px solid #fed7aa; background:#fff7ed; color:#7c2d12; border-radius:0; padding:22px 18px; font-weight:760; line-height:1.65; } .signup { background:#0f172a; color:white; border-radius:0; padding:26px 18px; } .signup p { color:#cbd5e1; }
     footer { margin-top:40px; color:#64748b; font-size:13px; font-weight:700; }
-    @media (max-width: 920px) { .hero, .section-head, .grid3, .grid4 { grid-template-columns:1fr; } .links { display:none; } .wrap { padding-top:16px; } .panel, .dark, .signup { padding:22px; border-radius:26px; } }
+    @media (max-width: 920px) { .links { display:none; } h1 { font-size: clamp(42px, 14vw, 68px); } .panel, .dark, .signup { padding-left:18px; padding-right:18px; border-radius:0; } }
   </style>
 </head>
 <body>
@@ -661,7 +664,7 @@ function buildPortalHtml(settings: RaiseSettings) {
     <section class="section panel" id="process"><div class="section-head"><h2>From interest to approved participation</h2><p>${safeText(settings.processSummary)}</p></div><div class="grid3">${rowCardsHtml(processCards)}</div></section>
     <section class="section notice"><strong>Important notice:</strong> ${safeText(settings.riskNotice)} ${safeText(settings.wireNotice)}</section>
     <section class="section signup" id="signup"><span class="pill">Investor signup</span><h2>Begin the private review</h2><p>Submit a non-binding indication of interest, request the package, and wait for owner review before any final documents or payment instructions.</p><div class="cta"><a class="btn primary" href="mailto:${safeText(settings.contactEmail)}?subject=${subject}&body=${body}">Request package / submit interest</a><a class="btn secondary" href="${safeText(settings.website)}">Visit company site</a></div><p><strong>${safeText(settings.founderName)}</strong><br>${safeText(settings.founderTitle)}<br>${safeText(settings.contactEmail)} · ${safeText(settings.contactPhone)}</p></section>
-    <footer>Generated with MONIEZI Raise V1.3.1. This static portal is a presentation and interest-intake page. It should be reviewed by appropriate advisors before use for any financing transaction.</footer>
+    <footer>Generated with MONIEZI Raise V1.4. This static portal is a presentation and interest-intake page. It should be reviewed by appropriate advisors before use for any financing transaction.</footer>
   </main>
 </body>
 </html>`;
@@ -677,8 +680,8 @@ function buildPackageHtml(settings: RaiseSettings, lead?: SupporterForm | Lead) 
   <title>${safeText(settings.businessName)} Funding Package</title>
   <style>
     body { margin:0; background:#f8fafc; color:#0f172a; font-family:Inter, Arial, sans-serif; }
-    main { max-width:900px; margin:0 auto; padding:42px 22px; }
-    section { background:white; border:1px solid #e2e8f0; border-radius:28px; padding:32px; box-shadow:0 24px 80px rgba(15,23,42,.10); }
+    main { width:100%; max-width:none; margin:0; padding:0; }
+    section { background:white; border-top:1px solid #e2e8f0; border-bottom:1px solid #e2e8f0; border-radius:0; padding:28px 18px; box-shadow:none; }
     h1 { font-size:34px; line-height:1.05; margin:10px 0 10px; } h2 { margin-top:28px; padding-top:20px; border-top:1px solid #e2e8f0; }
     p { color:#334155; line-height:1.65; font-weight:650; } table { width:100%; border-collapse:collapse; margin-top:12px; }
     th,td { text-align:left; vertical-align:top; border-bottom:1px solid #e2e8f0; padding:12px 8px; }
@@ -690,7 +693,7 @@ function buildPackageHtml(settings: RaiseSettings, lead?: SupporterForm | Lead) 
 </head>
 <body>
 <main><section>
-  <div class="brand">MONIEZI Raise V1.3.1 · Private Funding Package</div>
+  <div class="brand">MONIEZI Raise V1.4 · Private Funding Package</div>
   <h1>${safeText(settings.businessName)} Funding Package</h1>
   <p>${safeText(settings.portalSubtitle)}</p>
   <div class="notice"><strong>Important:</strong> ${safeText(settings.riskNotice)}</div>
@@ -721,7 +724,7 @@ function buildPackageHtml(settings: RaiseSettings, lead?: SupporterForm | Lead) 
     <tr><th>Typed name</th><td>${safeText(person.typedName || 'Not signed')}</td></tr>
   </table>
   <h2>Wire / Payment Security</h2><p>${safeText(settings.wireNotice)}</p>
-  <p style="font-size:12px;color:#64748b;">Generated by MONIEZI Raise V1.3.1. This is a business workflow document, not legal advice or a final financing agreement.</p>
+  <p style="font-size:12px;color:#64748b;">Generated by MONIEZI Raise V1.4. This is a business workflow document, not legal advice or a final financing agreement.</p>
 </section></main>
 </body>
 </html>`;
@@ -738,7 +741,7 @@ function MultilineEditor({ label, value, onChange, help }: { label: string; valu
 
 function App() {
   const [state, setState] = useState<AppState>(() => loadState());
-  const [view, setView] = useState<ViewKey>('portal');
+  const [view, setView] = useState<ViewKey>('build');
   const [form, setForm] = useState<SupporterForm>(() => ({ ...blankSupporter }));
   const [savedMessage, setSavedMessage] = useState('');
 
@@ -755,9 +758,9 @@ function App() {
   const updateForm = (patch: Partial<SupporterForm>) => setForm((prev) => ({ ...prev, ...patch }));
 
   const applyTemplate = (template: TemplateKey) => {
-    const next = template === 'emyrgen' ? emyrgenStyleTemplate : template === 'startup' ? startupTemplate : localTemplate;
+    const next = template === 'premium' ? premiumPortalTemplate : template === 'startup' ? startupTemplate : localTemplate;
     setState((prev) => ({ ...prev, settings: next }));
-    setSavedMessage(template === 'emyrgen' ? 'EMYRGEN-style Investor Portal template applied.' : template === 'startup' ? 'Startup / SAFE template applied.' : 'Local Business Expansion template applied.');
+    setSavedMessage(template === 'premium' ? 'Premium Investor Portal template applied.' : template === 'startup' ? 'Startup / SAFE template applied.' : 'Local Business Expansion template applied.');
   };
 
   const handleLogoUpload = (file?: File) => {
@@ -823,12 +826,12 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-white">
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/92 shadow-sm backdrop-blur dark:border-white/10 dark:bg-slate-950/92">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+        <div className="flex w-full items-center justify-between gap-3 px-0 py-4">
           <div className="flex min-w-0 items-center gap-3">
             <LogoMark settings={settings} />
             <div className="min-w-0">
               <p className="truncate text-lg font-black tracking-tight">MONIEZI Raise</p>
-              <p className="truncate text-xs font-black uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">V1.3.1 · Full Investor Portal Builder</p>
+              <p className="truncate text-xs font-black uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">V1.4 · Premium Mobile Portal Builder</p>
             </div>
           </div>
           <nav className="hidden items-center gap-2 lg:flex">
@@ -844,19 +847,19 @@ function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 pb-28 pt-6 sm:px-6 lg:pb-12">
-        <section className="mb-6 grid gap-4 md:grid-cols-4">
+      <main className="w-full px-0 pb-28 pt-0 lg:pb-12">
+        <section className="mb-0 grid gap-0">
           <StatCard label="Funding Goal" value={money(settings.fundingGoal)} icon={BadgeDollarSign} />
           <StatCard label="Interest Logged" value={money(totalInterest)} icon={Handshake} />
           <StatCard label="Leads" value={String(leads.length)} icon={ClipboardCheck} />
-          <StatCard label="Template" value={settings.templateKey === 'emyrgen' ? 'Portal' : settings.raiseMode === 'startup' ? 'Startup' : 'Local'} icon={Globe2} />
+          <StatCard label="Template" value={settings.templateKey === 'premium' ? 'Premium' : settings.raiseMode === 'startup' ? 'Startup' : 'Local'} icon={Globe2} />
         </section>
 
         {view === 'build' && (
           <div className="grid gap-6">
             <SectionCard title="Choose the investor portal template" eyebrow="Step 1 · The output the buyer is creating">
-              <div className="grid gap-4 lg:grid-cols-3">
-                <TemplateButton active={settings.templateKey === 'emyrgen'} title="EMYRGEN-style Investor Portal" subtitle="Full investor-portal structure: offer, why now, business model, proof, market, process, and signup. This is the strongest template for a serious private round." icon={Landmark} onClick={() => applyTemplate('emyrgen')} />
+              <div className="grid gap-4">
+                <TemplateButton active={settings.templateKey === 'premium'} title="Premium Investor Portal" subtitle="Full premium portal structure: offer, why now, business model, proof, market, process, package request, and signup. This is the strongest template for a serious private round." icon={Landmark} onClick={() => applyTemplate('premium')} />
                 <TemplateButton active={settings.templateKey === 'startup'} title="Startup / SAFE Raise" subtitle="For founders who need a private startup-style investor page, proposed SAFE terms, package request, and indication-of-interest flow." icon={Rocket} onClick={() => applyTemplate('startup')} />
                 <TemplateButton active={settings.templateKey === 'local'} title="Local Business Expansion" subtitle="For contractors, service businesses, operators, and local companies raising for vehicles, equipment, crews, materials, or working capital." icon={BriefcaseBusiness} onClick={() => applyTemplate('local')} />
               </div>
@@ -864,7 +867,7 @@ function App() {
             </SectionCard>
 
             <SectionCard title="Business identity" eyebrow="Step 2 · Owner details">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4">
                 <Field label="Public business name"><input className={inputBase} value={settings.businessName} onChange={(e) => updateSettings({ businessName: e.target.value })} /></Field>
                 <Field label="Legal name"><input className={inputBase} value={settings.legalName} onChange={(e) => updateSettings({ legalName: e.target.value })} /></Field>
                 <Field label="Founder / Owner"><input className={inputBase} value={settings.founderName} onChange={(e) => updateSettings({ founderName: e.target.value })} /></Field>
@@ -874,7 +877,7 @@ function App() {
                 <Field label="Website"><input className={inputBase} value={settings.website} onChange={(e) => updateSettings({ website: e.target.value })} /></Field>
                 <Field label="Location"><input className={inputBase} value={settings.location} onChange={(e) => updateSettings({ location: e.target.value })} /></Field>
               </div>
-              <div className="mt-4 flex flex-col gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50 sm:flex-row sm:items-center">
+              <div className="mt-4 flex flex-col gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50">
                 <LogoMark settings={settings} size="lg" />
                 <div className="flex-1">
                   <p className="text-sm font-black text-slate-950 dark:text-white">Optional logo</p>
@@ -921,7 +924,7 @@ function App() {
             </SectionCard>
 
             <SectionCard title="Funding structure and process" eyebrow="Step 6 · Amounts, package, and next steps">
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4">
                 <Field label="Funding goal"><input className={inputBase} inputMode="numeric" value={settings.fundingGoal} onChange={(e) => updateSettings({ fundingGoal: e.target.value })} /></Field>
                 <Field label="Minimum interest"><input className={inputBase} inputMode="numeric" value={settings.minimumInterest} onChange={(e) => updateSettings({ minimumInterest: e.target.value })} /></Field>
                 <Field label="Deadline"><input className={inputBase} type="date" value={settings.deadline} onChange={(e) => updateSettings({ deadline: e.target.value })} /></Field>
@@ -971,7 +974,7 @@ function App() {
             <div className="mb-5 rounded-3xl border border-blue-200 bg-blue-50 p-5 text-sm font-bold leading-6 text-blue-950 dark:border-blue-400/30 dark:bg-blue-500/10 dark:text-blue-100">
               This form records a non-binding indication of interest for owner review. In a static exported portal, the call-to-action prepares an email to the owner. A later hosted version can save submissions directly to the owner dashboard.
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4">
               <Field label="Supporter type">
                 <select className={inputBase} value={form.supporterType} onChange={(e) => updateForm({ supporterType: e.target.value as SupporterType })}>
                   <option value="individual">Individual</option>
@@ -1020,11 +1023,11 @@ function App() {
             <div className="grid gap-4">
               {leads.map((lead) => (
                 <div key={lead.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50">
-                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="flex flex-col gap-4">
                     <div>
                       <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">{lead.status}</p>
                       <h3 className="mt-1 text-xl font-black text-slate-950 dark:text-white">{lead.fullName}</h3>
-                      <div className="mt-3 grid gap-2 text-sm font-bold text-slate-700 dark:text-slate-200 sm:grid-cols-2">
+                      <div className="mt-3 grid gap-2 text-sm font-bold text-slate-700 dark:text-slate-200">
                         <span className="inline-flex items-center gap-2"><Mail className="h-4 w-4" /> {lead.email}</span>
                         <span className="inline-flex items-center gap-2"><Phone className="h-4 w-4" /> {lead.phone || 'No phone'}</span>
                         <span><strong>Amount:</strong> {money(lead.proposedAmount)}</span>
@@ -1049,7 +1052,7 @@ function App() {
 
         {view === 'package' && (
           <SectionCard title="Downloadable supporter / investor package" eyebrow="The file the owner can send after interest">
-            <div className="grid gap-5 lg:grid-cols-[1fr_.9fr]">
+            <div className="grid gap-5">
               <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50">
                 <p className="text-sm font-bold leading-7 text-slate-700 dark:text-slate-200">The package is generated from the full portal builder fields. It gives the owner a clean file to send after a person asks for details.</p>
                 <div className="mt-5 grid gap-3 text-sm font-bold text-slate-700 dark:text-slate-200">
@@ -1071,16 +1074,16 @@ function App() {
 
         {view === 'guide' && (
           <div className="grid gap-6">
-            <SectionCard title="What changed in V1.3.1" eyebrow="Product direction">
-              <div className="grid gap-4 md:grid-cols-3">
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50"><Globe2 className="mb-3 h-7 w-7 text-blue-600" /><h3 className="text-lg font-black text-slate-950 dark:text-white">Full Portal Output</h3><p className="mt-2 text-sm font-bold leading-6 text-slate-700 dark:text-slate-200">Preview now renders a full investor/supporter portal, not a short summary card.</p></div>
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50"><Landmark className="mb-3 h-7 w-7 text-blue-600" /><h3 className="text-lg font-black text-slate-950 dark:text-white">EMYRGEN-style Template</h3><p className="mt-2 text-sm font-bold leading-6 text-slate-700 dark:text-slate-200">The first template follows a serious investor-portal structure: offer, why now, model, proof, market, process, signup.</p></div>
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50"><Download className="mb-3 h-7 w-7 text-blue-600" /><h3 className="text-lg font-black text-slate-950 dark:text-white">Exportable Page</h3><p className="mt-2 text-sm font-bold leading-6 text-slate-700 dark:text-slate-200">The exported static HTML now matches the richer portal structure.</p></div>
+            <SectionCard title="What changed in V1.4" eyebrow="Product direction">
+              <div className="grid gap-4">
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50"><Globe2 className="mb-3 h-7 w-7 text-blue-600" /><h3 className="text-lg font-black text-slate-950 dark:text-white">Full-Width Mobile Portal</h3><p className="mt-2 text-sm font-bold leading-6 text-slate-700 dark:text-slate-200">Preview now renders a full-width, one-column mobile investor/supporter portal instead of a narrow framed summary.</p></div>
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50"><Landmark className="mb-3 h-7 w-7 text-blue-600" /><h3 className="text-lg font-black text-slate-950 dark:text-white">Premium Portal Template</h3><p className="mt-2 text-sm font-bold leading-6 text-slate-700 dark:text-slate-200">The first template follows a serious investor-portal structure: offer, why now, model, proof, market, process, package request, and signup.</p></div>
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-slate-950/50"><Download className="mb-3 h-7 w-7 text-blue-600" /><h3 className="text-lg font-black text-slate-950 dark:text-white">Exportable Page</h3><p className="mt-2 text-sm font-bold leading-6 text-slate-700 dark:text-slate-200">The exported static HTML now uses the same full-width, one-column portal structure.</p></div>
               </div>
             </SectionCard>
             <SectionCard title="Recommended buyer workflow" eyebrow="How the owner uses it">
               <ol className="space-y-3 text-base font-bold leading-7 text-slate-700 dark:text-slate-200">
-                <li>1. Choose the EMYRGEN-style Investor Portal template for a serious private raise, or use Startup / Local Business for simpler markets.</li>
+                <li>1. Choose the Premium Investor Portal template for a serious private raise, or use Startup / Local Business for a more specific buyer type.</li>
                 <li>2. Enter the business identity, founder details, headline, offer, investment thesis, why-now story, proof, market logic, use of funds, terms, and process.</li>
                 <li>3. Open Preview and review the full investor portal as a visitor would see it.</li>
                 <li>4. Export the static portal HTML and upload it to GitHub Pages, Cloudflare Pages, Netlify, or the owner website.</li>
