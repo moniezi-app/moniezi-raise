@@ -1,13 +1,13 @@
 {
   "name": "MONIEZI Raise",
-  "short_name": "MZ Raise",
-  "description": "MONIEZI Raise — standalone private investor signup, reservation, and package portal",
+  "short_name": "Raise",
+  "description": "MONIEZI Raise \u2014 private funding page, supporter signup, and investor package workflow.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0b1020",
-  "theme_color": "#0b1020",
+  "background_color": "#081226",
+  "theme_color": "#081226",
   "icons": [
     {
       "src": "icons/icon-48.png",
@@ -94,5 +94,5 @@
       "purpose": "maskable"
     }
   ],
-  "id": "/moniezi-raise-v1/"
+  "id": "./moniezi-raise"
 }
