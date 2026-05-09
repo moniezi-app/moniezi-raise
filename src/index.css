@@ -336,7 +336,7 @@ html.theme-light .ring-gray-300 {
 /* MONIEZI Raise keeps dedicated high-contrast controls in App.tsx. */
 
 
-/* MONIEZI Raise V1.5.2 — premium typography polish */
+/* MONIEZI Raise V1.5.3 — premium typography, breathing line spacing, and visual story uploads */
 :root {
   --moniezi-ui-font: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --moniezi-display-font: "Sora", "Manrope", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -357,3 +357,12 @@ h1, h2, h3, h4, .font-brand {
 .font-medium { font-weight: 500 !important; }
 p, li, input, textarea, select { font-weight: 500 !important; }
 .tracking-\[0\.18em\], .tracking-\[0\.16em\] { letter-spacing: 0.13em !important; }
+
+
+/* V1.5.3 readability breathing room */
+p, li, textarea {
+  line-height: 1.9 !important;
+}
+input, select, button {
+  line-height: 1.45 !important;
+}

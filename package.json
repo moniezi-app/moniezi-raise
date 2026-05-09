@@ -1,8 +1,8 @@
 {
   "name": "moniezi-raise-v1",
   "private": true,
-  "version": "1.5.2",
-  "description": "MONIEZI Raise V1.5.2 premium investor portal builder with modern typography, lighter font weights, and polished investor-page visual hierarchy",
+  "version": "1.5.4",
+  "description": "MONIEZI Raise V1.5.4 premium investor portal builder with section image and video uploads for richer investor pages",
   "type": "module",
   "scripts": {
     "dev": "vite",
