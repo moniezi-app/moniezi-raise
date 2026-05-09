@@ -59,7 +59,7 @@ interface PortalSettings {
   agreementDataUrl: string;
 }
 
-const STORAGE_KEY = 'moniezi-raise-v1-5-premium-portal-builder-state';
+const STORAGE_KEY = 'moniezi-raise-v1-5-2-premium-typography-state';
 
 const baseTemplate: PortalSettings = {
   templateKey: 'premium',
@@ -125,11 +125,11 @@ const startupTemplate: PortalSettings = {
   investorThesis:
     'The thesis is that small operators need practical software that makes them look organized, keeps records under control, and helps them prepare for growth without jumping into expensive enterprise systems.',
   whyNow:
-    'The product direction is defined, the customer problem is clear, and the next milestone is commercial execution: product polish, customer acquisition, launch materials, and early buyer conversion.',
+    'The product direction is defined, the customer problem is clear, and the next milestone is commercial execution: product polish, customer acquisition, launch materials, and early customer conversion.',
   businessModel:
     'Revenue may come from direct digital-product sales, early-access packages, setup support, templates, licensing, subscriptions, or future hosted services once customer demand is validated.',
   proofPoints:
-    'Working product version completed. Target customer defined. Early sales channels identified. Launch package and founder toolkit strategy prepared. Next milestone is buyer validation and first revenue.',
+    'Working product version completed. Target customer defined. Early sales channels identified. Launch package and founder toolkit strategy prepared. Next milestone is customer validation and first revenue.',
 };
 
 const localTemplate: PortalSettings = {
@@ -263,9 +263,9 @@ function LogoMark({ settings, large = false }: { settings: PortalSettings; large
 function Guidance({ title, bullets }: { title: string; bullets: string[] }) {
   return (
     <div className="rounded-[1.75rem] border border-blue-200/80 bg-blue-50/80 p-5 shadow-sm dark:border-blue-400/20 dark:bg-blue-500/10">
-      <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-700 dark:text-blue-200">Builder guidance</p>
-      <h4 className="mt-2 text-lg font-black tracking-tight text-slate-950 dark:text-white">{title}</h4>
-      <ul className="mt-4 grid gap-3 text-sm font-bold leading-6 text-slate-700 dark:text-slate-200">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-200">Builder guidance</p>
+      <h4 className="mt-2 text-lg font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h4>
+      <ul className="mt-4 grid gap-3 text-sm font-medium leading-6 text-slate-700 dark:text-slate-200">
         {bullets.map((bullet) => (
           <li key={bullet} className="flex gap-3">
             <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-300" />
@@ -280,8 +280,8 @@ function Guidance({ title, bullets }: { title: string; bullets: string[] }) {
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block text-xs font-black uppercase tracking-[0.16em] text-slate-600 dark:text-slate-300">{label}</span>
-      {hint && <span className="mt-2 block text-sm font-bold leading-6 text-slate-500 dark:text-slate-400">{hint}</span>}
+      <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-slate-600 dark:text-slate-300">{label}</span>
+      {hint && <span className="mt-2 block text-sm font-medium leading-6 text-slate-500 dark:text-slate-400">{hint}</span>}
       <div className="mt-3">{children}</div>
     </label>
   );
@@ -291,13 +291,13 @@ function BuilderSection({ number, title, subtitle, children }: { number: string;
   return (
     <section className="w-full border-y border-slate-200 bg-white px-5 py-8 dark:border-white/10 dark:bg-slate-900/80 sm:px-8 lg:px-10">
       <div className="mb-7 flex items-start gap-4">
-        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-slate-950 text-sm font-black text-white shadow-xl shadow-slate-950/15 dark:bg-blue-500">
+        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-slate-950 text-sm font-semibold text-white shadow-xl shadow-slate-950/15 dark:bg-blue-500">
           {number}
         </div>
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">Portal builder</p>
-          <h2 className="mt-2 text-3xl font-black leading-none tracking-[-0.04em] text-slate-950 dark:text-white sm:text-4xl">{title}</h2>
-          <p className="mt-3 text-base font-bold leading-7 text-slate-600 dark:text-slate-300">{subtitle}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">Portal builder</p>
+          <h2 className="mt-2 text-3xl font-semibold leading-none tracking-[-0.04em] text-slate-950 dark:text-white sm:text-4xl">{title}</h2>
+          <p className="mt-3 text-base font-medium leading-7 text-slate-600 dark:text-slate-300">{subtitle}</p>
         </div>
       </div>
       <div className="grid gap-7">{children}</div>
@@ -321,8 +321,8 @@ function TemplateButton({ template, active, onClick }: { template: (typeof templ
           <Icon className="h-6 w-6" />
         </div>
         <div>
-          <h3 className="text-xl font-black tracking-tight">{template.title}</h3>
-          <p className="mt-2 text-sm font-bold leading-6 text-slate-600 dark:text-slate-300">{template.body}</p>
+          <h3 className="text-xl font-semibold tracking-tight">{template.title}</h3>
+          <p className="mt-2 text-sm font-medium leading-6 text-slate-600 dark:text-slate-300">{template.body}</p>
         </div>
       </div>
     </button>
@@ -330,7 +330,7 @@ function TemplateButton({ template, active, onClick }: { template: (typeof templ
 }
 
 const inputClass =
-  'w-full rounded-[1.35rem] border border-slate-200 bg-white px-4 py-4 text-base font-bold text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-white/10 dark:bg-slate-950/70 dark:text-white dark:focus:ring-blue-500/20';
+  'w-full rounded-[1.35rem] border border-slate-200 bg-white px-4 py-4 text-base font-medium text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-white/10 dark:bg-slate-950/70 dark:text-white dark:focus:ring-blue-500/20';
 const textAreaClass = `${inputClass} min-h-36 leading-7`;
 
 function UploadBox({ title, subtitle, fileName, accept, onFile }: { title: string; subtitle: string; fileName?: string; accept: string; onFile: (file: File) => void }) {
@@ -342,13 +342,13 @@ function UploadBox({ title, subtitle, fileName, accept, onFile }: { title: strin
           <Upload className="h-6 w-6" />
         </div>
         <div className="min-w-0 flex-1">
-          <h4 className="text-lg font-black text-slate-950 dark:text-white">{title}</h4>
-          <p className="mt-2 text-sm font-bold leading-6 text-slate-600 dark:text-slate-300">{subtitle}</p>
-          {fileName && <p className="mt-3 rounded-xl bg-white px-3 py-2 text-sm font-black text-slate-700 dark:bg-white/10 dark:text-slate-100">Selected: {fileName}</p>}
+          <h4 className="text-lg font-semibold text-slate-950 dark:text-white">{title}</h4>
+          <p className="mt-2 text-sm font-medium leading-6 text-slate-600 dark:text-slate-300">{subtitle}</p>
+          {fileName && <p className="mt-3 rounded-xl bg-white px-3 py-2 text-sm font-semibold text-slate-700 dark:bg-white/10 dark:text-slate-100">Selected: {fileName}</p>}
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="mt-4 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg active:scale-95 dark:bg-blue-500"
+            className="mt-4 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg active:scale-95 dark:bg-blue-500"
           >
             Choose file
           </button>
@@ -372,9 +372,9 @@ function UploadBox({ title, subtitle, fileName, accept, onFile }: { title: strin
 function PortalCard({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
   return (
     <article className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/70 dark:border-white/10 dark:bg-white/5 dark:shadow-black/20">
-      <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">{eyebrow}</p>
-      <h3 className="mt-3 text-2xl font-black leading-tight tracking-[-0.035em] text-slate-950 dark:text-white">{title}</h3>
-      <p className="mt-4 text-base font-bold leading-8 text-slate-600 dark:text-slate-200">{body}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">{eyebrow}</p>
+      <h3 className="mt-3 text-2xl font-semibold leading-tight tracking-[-0.035em] text-slate-950 dark:text-white">{title}</h3>
+      <p className="mt-4 text-base font-medium leading-8 text-slate-600 dark:text-slate-200">{body}</p>
     </article>
   );
 }
@@ -382,8 +382,8 @@ function PortalCard({ eyebrow, title, body }: { eyebrow: string; title: string; 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[1.5rem] border border-white/10 bg-white/10 p-4 text-white">
-      <p className="text-[11px] font-black uppercase tracking-[0.16em] text-blue-200">{label}</p>
-      <p className="mt-2 text-2xl font-black tracking-tight">{value}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-200">{label}</p>
+      <p className="mt-2 text-2xl font-semibold tracking-tight">{value}</p>
     </div>
   );
 }
@@ -391,9 +391,9 @@ function Metric({ label, value }: { label: string; value: string }) {
 function PortalSection({ eyebrow, title, body, children }: { eyebrow: string; title: string; body: string; children?: React.ReactNode }) {
   return (
     <section className="w-full border-y border-slate-200 bg-white px-5 py-9 dark:border-white/10 dark:bg-slate-900 sm:px-8 lg:px-10">
-      <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">{eyebrow}</p>
-      <h2 className="mt-3 text-4xl font-black leading-none tracking-[-0.055em] text-slate-950 dark:text-white sm:text-5xl">{title}</h2>
-      <p className="mt-5 text-base font-bold leading-8 text-slate-600 dark:text-slate-200">{body}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">{eyebrow}</p>
+      <h2 className="mt-3 text-4xl font-semibold leading-none tracking-[-0.055em] text-slate-950 dark:text-white sm:text-5xl">{title}</h2>
+      <p className="mt-5 text-base font-medium leading-8 text-slate-600 dark:text-slate-200">{body}</p>
       {children && <div className="mt-7">{children}</div>}
     </section>
   );
@@ -406,25 +406,25 @@ function InvestorPortal({ settings, standalone = false }: { settings: PortalSett
         <div className="flex items-center gap-3">
           <LogoMark settings={settings} />
           <div className="min-w-0">
-            <p className="truncate text-lg font-black">{settings.companyName}</p>
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-200">Private investor portal</p>
+            <p className="truncate text-lg font-semibold">{settings.companyName}</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-200">Private investor portal</p>
           </div>
         </div>
       </header>
 
       <section className="relative w-full overflow-hidden border-b border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,.40),_transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_54%,#172554_100%)] px-5 py-10 sm:px-8 lg:px-10">
         {settings.heroImageDataUrl && <img src={settings.heroImageDataUrl} alt="Company visual" className="mb-7 h-56 w-full rounded-[2rem] object-cover shadow-2xl shadow-black/30" />}
-        <p className="inline-flex rounded-full border border-blue-300/25 bg-blue-300/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-blue-100">{settings.portalEyebrow}</p>
-        <h1 className="mt-5 text-5xl font-black leading-[0.92] tracking-[-0.07em] sm:text-7xl lg:text-8xl">{settings.headline}</h1>
-        <p className="mt-6 text-lg font-bold leading-8 text-slate-200 sm:text-xl">{settings.subheadline}</p>
+        <p className="inline-flex rounded-full border border-blue-300/25 bg-blue-300/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-blue-100">{settings.portalEyebrow}</p>
+        <h1 className="mt-5 text-5xl font-semibold leading-[0.92] tracking-[-0.07em] sm:text-7xl lg:text-8xl">{settings.headline}</h1>
+        <p className="mt-6 text-lg font-medium leading-8 text-slate-200 sm:text-xl">{settings.subheadline}</p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-          <a href="#investor-interest" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-4 text-sm font-black text-white shadow-2xl shadow-blue-950/30">
+          <a href="#investor-interest" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-4 text-sm font-semibold text-white shadow-2xl shadow-blue-950/30">
             {settings.primaryCta} <ArrowRight className="h-4 w-4" />
           </a>
           <a
             href={settings.agreementDataUrl || `mailto:${settings.contactEmail}?subject=${encodeURIComponent(`Request investor document for ${settings.companyName}`)}`}
             download={settings.agreementDataUrl ? settings.agreementFileName || `${slugify(settings.companyName)}-agreement` : undefined}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-5 py-4 text-sm font-black text-white"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-5 py-4 text-sm font-semibold text-white"
           >
             {settings.secondaryCta} <Download className="h-4 w-4" />
           </a>
@@ -457,32 +457,31 @@ function InvestorPortal({ settings, standalone = false }: { settings: PortalSett
       </PortalSection>
 
       <section id="investor-interest" className="w-full border-y border-white/10 bg-slate-950 px-5 py-10 sm:px-8 lg:px-10">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-300">Investor interest</p>
-        <h2 className="mt-3 text-4xl font-black leading-none tracking-[-0.055em] text-white sm:text-5xl">Begin the private review</h2>
-        <p className="mt-5 text-base font-bold leading-8 text-slate-300">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">Investor interest</p>
+        <h2 className="mt-3 text-4xl font-semibold leading-none tracking-[-0.055em] text-white sm:text-5xl">Begin the private review</h2>
+        <p className="mt-5 text-base font-medium leading-8 text-slate-300">
           Submit your name, contact details, proposed interest amount, and questions. This is a non-binding indication of interest for owner review only.
         </p>
         <form className="mt-7 grid gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-5">
-          <input className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-bold text-slate-950" placeholder="Full name" />
-          <input className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-bold text-slate-950" placeholder="Email" />
-          <input className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-bold text-slate-950" placeholder="Phone" />
-          <input className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-bold text-slate-950" placeholder="Proposed amount" />
-          <textarea className="min-h-32 rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-bold text-slate-950" placeholder="Message or questions" />
-          <a href={`mailto:${settings.contactEmail}?subject=${encodeURIComponent(`Investor interest in ${settings.companyName}`)}&body=${encodeURIComponent('Name:\nEmail:\nPhone:\nProposed amount:\nMessage:\n')}`} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-4 text-sm font-black text-white shadow-2xl shadow-blue-950/30">
-            Email interest to owner <Mail className="h-4 w-4" />
+          <input className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-medium text-slate-950" placeholder="Full name" />
+          <input className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-medium text-slate-950" placeholder="Email" />
+          <input className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-medium text-slate-950" placeholder="Phone" />
+          <input className="rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-medium text-slate-950" placeholder="Proposed amount" />
+          <textarea className="min-h-32 rounded-2xl border border-white/10 bg-white px-4 py-4 text-base font-medium text-slate-950" placeholder="Message or questions" />
+          <a href={`mailto:${settings.contactEmail}?subject=${encodeURIComponent(`Investor interest in ${settings.companyName}`)}&body=${encodeURIComponent('Name:\nEmail:\nPhone:\nProposed amount:\nMessage:\n')}`} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-4 text-sm font-semibold text-white shadow-2xl shadow-blue-950/30">
+            Submit by email <Mail className="h-4 w-4" />
           </a>
         </form>
       </section>
 
       <section className="w-full bg-amber-50 px-5 py-7 text-amber-950 sm:px-8 lg:px-10">
-        <p className="text-xs font-black uppercase tracking-[0.18em]">Important review notice</p>
-        <p className="mt-3 text-sm font-bold leading-7">{settings.riskNotice}</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em]">Important review notice</p>
+        <p className="mt-3 text-sm font-medium leading-7">{settings.riskNotice}</p>
       </section>
 
-      <footer className="w-full bg-slate-950 px-5 py-7 text-sm font-bold leading-7 text-slate-400 sm:px-8 lg:px-10">
+      <footer className="w-full bg-slate-950 px-5 py-7 text-sm font-medium leading-7 text-slate-400 sm:px-8 lg:px-10">
         <p>{settings.legalName} · {settings.location}</p>
         <p>{settings.contactEmail} · {settings.contactPhone} {settings.website ? `· ${settings.website}` : ''}</p>
-        {!standalone && <p className="mt-3 text-xs uppercase tracking-[0.14em] text-slate-500">Preview generated by MONIEZI Raise V1.5</p>}
       </footer>
     </div>
   );
@@ -500,7 +499,8 @@ function buildPortalHtml(settings: PortalSettings) {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${safeText(settings.companyName)} Private Investor Portal</title>
 <style>
-*{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#020617;color:white} a{text-decoration:none}.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:14px;padding:16px 20px;background:rgba(2,6,23,.92);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.1)}.logo,.logoMark{width:50px;height:50px;border-radius:18px;object-fit:cover}.logoMark{display:grid;place-items:center;background:linear-gradient(135deg,#3b82f6,#1e1b4b);box-shadow:0 18px 45px rgba(37,99,235,.28)}.brand strong{display:block;font-size:18px}.brand span{display:block;margin-top:3px;color:#bfdbfe;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.16em}.hero{padding:42px 20px;background:radial-gradient(circle at top left,rgba(59,130,246,.42),transparent 35%),linear-gradient(135deg,#020617,#0f172a 56%,#172554);border-bottom:1px solid rgba(255,255,255,.1)}.heroImage{width:100%;height:230px;object-fit:cover;border-radius:32px;margin-bottom:28px;box-shadow:0 26px 70px rgba(0,0,0,.38)}.eyebrow{display:inline-flex;border:1px solid rgba(147,197,253,.28);background:rgba(147,197,253,.1);border-radius:999px;padding:9px 14px;color:#dbeafe;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.15em}h1{margin:22px 0 0;font-size:clamp(46px,12vw,88px);line-height:.92;letter-spacing:-.075em}h2{margin:0;font-size:clamp(38px,9vw,60px);line-height:.96;letter-spacing:-.06em}.lead{margin-top:24px;color:#dbeafe;font-size:19px;font-weight:750;line-height:1.7}.cta{display:grid;gap:12px;margin-top:30px}.btn{display:flex;justify-content:center;align-items:center;border-radius:20px;padding:17px 20px;font-size:14px;font-weight:950}.primary{background:#3b82f6;color:white;box-shadow:0 20px 46px rgba(30,64,175,.36)}.secondary{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);color:white}.metrics{display:grid;gap:12px;margin-top:30px}.metric{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.08);border-radius:24px;padding:18px}.metric span,.card span{display:block;color:#bfdbfe;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.15em}.metric strong{display:block;margin-top:7px;font-size:27px;letter-spacing:-.04em}.section{padding:38px 20px;background:#fff;color:#0f172a;border-bottom:1px solid #e2e8f0}.section.dark{background:#0f172a;color:white;border-color:rgba(255,255,255,.1)}.section.dark p{color:#cbd5e1}.section p{color:#475569;font-size:16px;font-weight:720;line-height:1.75}.card{margin-top:18px;border:1px solid #e2e8f0;background:white;border-radius:30px;padding:22px;box-shadow:0 20px 55px rgba(15,23,42,.08)}.dark .card{border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.05);box-shadow:none}.card h3{margin:10px 0 0;font-size:25px;line-height:1.08;letter-spacing:-.04em}.card p{margin-top:15px}.interest{padding:40px 20px;background:#020617;border-top:1px solid rgba(255,255,255,.1)}.interest p{color:#cbd5e1;font-size:16px;font-weight:720;line-height:1.7}.form{display:grid;gap:14px;margin-top:24px;padding:20px;border-radius:30px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05)}input,textarea{width:100%;border:0;border-radius:18px;padding:16px;font-size:16px;font-weight:750;color:#0f172a}textarea{min-height:130px}.notice{padding:28px 20px;background:#fffbeb;color:#78350f}.notice p{font-weight:760;line-height:1.75}.foot{padding:28px 20px;background:#020617;color:#94a3b8;font-weight:750;line-height:1.7}@media(min-width:900px){.top,.hero,.section,.interest,.notice,.foot{padding-left:42px;padding-right:42px}.cta{display:flex;flex-wrap:wrap}.metrics{grid-template-columns:1fr}.heroImage{height:420px}}
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap');
+*{box-sizing:border-box} html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%} body{margin:0;font-family:Manrope,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#020617;color:white;font-weight:500;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility} a{text-decoration:none}h1,h2,h3,.brand strong{font-family:Sora,Manrope,ui-sans-serif,system-ui,sans-serif;font-weight:650}.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:14px;padding:16px 20px;background:rgba(2,6,23,.92);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.1)}.logo,.logoMark{width:50px;height:50px;border-radius:18px;object-fit:cover}.logoMark{display:grid;place-items:center;background:linear-gradient(135deg,#3b82f6,#1e1b4b);box-shadow:0 18px 45px rgba(37,99,235,.28)}.brand strong{display:block;font-size:18px;letter-spacing:-.025em}.brand span{display:block;margin-top:4px;color:#bfdbfe;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.17em}.hero{padding:42px 20px;background:radial-gradient(circle at top left,rgba(59,130,246,.42),transparent 35%),linear-gradient(135deg,#020617,#0f172a 56%,#172554);border-bottom:1px solid rgba(255,255,255,.1)}.heroImage{width:100%;height:230px;object-fit:cover;border-radius:32px;margin-bottom:28px;box-shadow:0 26px 70px rgba(0,0,0,.38)}.eyebrow{display:inline-flex;border:1px solid rgba(147,197,253,.28);background:rgba(147,197,253,.1);border-radius:999px;padding:9px 14px;color:#dbeafe;font-size:10px;font-weight:650;text-transform:uppercase;letter-spacing:.16em}h1{margin:22px 0 0;font-size:clamp(42px,11vw,84px);line-height:.95;letter-spacing:-.065em}h2{margin:0;font-size:clamp(34px,8.5vw,58px);line-height:.98;letter-spacing:-.05em}.lead{margin-top:24px;color:#dbeafe;font-size:18px;font-weight:500;line-height:1.75}.cta{display:grid;gap:12px;margin-top:30px}.btn{display:flex;justify-content:center;align-items:center;border-radius:20px;padding:17px 20px;font-size:14px;font-weight:650;letter-spacing:-.01em}.primary{background:#3b82f6;color:white;box-shadow:0 20px 46px rgba(30,64,175,.36)}.secondary{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);color:white}.metrics{display:grid;gap:12px;margin-top:30px}.metric{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.08);border-radius:24px;padding:18px}.metric span,.card span{display:block;color:#bfdbfe;font-size:10px;font-weight:650;text-transform:uppercase;letter-spacing:.16em}.metric strong{display:block;margin-top:8px;font-family:Sora,Manrope,sans-serif;font-size:25px;font-weight:600;letter-spacing:-.035em}.section{padding:38px 20px;background:#fff;color:#0f172a;border-bottom:1px solid #e2e8f0}.section.dark{background:#0f172a;color:white;border-color:rgba(255,255,255,.1)}.section.dark p{color:#cbd5e1}.section p{color:#475569;font-size:16px;font-weight:500;line-height:1.8}.card{margin-top:18px;border:1px solid #e2e8f0;background:white;border-radius:30px;padding:22px;box-shadow:0 20px 55px rgba(15,23,42,.08)}.dark .card{border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.05);box-shadow:none}.card h3{margin:10px 0 0;font-size:24px;line-height:1.12;letter-spacing:-.035em}.card p{margin-top:15px}.interest{padding:40px 20px;background:#020617;border-top:1px solid rgba(255,255,255,.1)}.interest p{color:#cbd5e1;font-size:16px;font-weight:500;line-height:1.75}.form{display:grid;gap:14px;margin-top:24px;padding:20px;border-radius:30px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05)}input,textarea{width:100%;border:0;border-radius:18px;padding:16px;font-family:Manrope,system-ui,sans-serif;font-size:16px;font-weight:500;color:#0f172a}textarea{min-height:130px}.notice{padding:28px 20px;background:#fffbeb;color:#78350f}.notice p{font-weight:500;line-height:1.8}.foot{padding:28px 20px;background:#020617;color:#94a3b8;font-weight:500;line-height:1.75}@media(min-width:900px){.top,.hero,.section,.interest,.notice,.foot{padding-left:42px;padding-right:42px}.cta{display:flex;flex-wrap:wrap}.metrics{grid-template-columns:1fr}.heroImage{height:420px}}
 </style>
 </head>
 <body>
@@ -510,15 +510,15 @@ function buildPortalHtml(settings: PortalSettings) {
 <section class="section dark"><span class="eyebrow">Why now</span><h2>The timing and funding window</h2><p>${safeText(settings.whyNow)}</p><article class="card"><span>Use of funds</span><h3>Capital tied to specific execution needs</h3><p>${safeText(settings.useOfFunds)}</p></article></section>
 <section class="section"><span class="eyebrow">Proof</span><h2>Evidence, readiness, and credibility</h2><p>${safeText(settings.proofPoints)}</p><article class="card"><span>Market opportunity</span><h3>The customer problem and revenue logic</h3><p>${safeText(settings.marketOpportunity)}</p></article></section>
 <section class="section"><span class="eyebrow">Terms</span><h2>Proposed participation structure</h2><p>${safeText(settings.termsSummary)}</p><article class="card"><span>Process</span><h3>From interest to approved participation</h3><p>${safeText(settings.investorProcess)}</p></article></section>
-<section id="investor-interest" class="interest"><span class="eyebrow">Investor interest</span><h2>Begin the private review</h2><p>Submit your name, contact details, proposed interest amount, and questions. This is a non-binding indication of interest for owner review only.</p><div class="form"><input placeholder="Full name"/><input placeholder="Email"/><input placeholder="Phone"/><input placeholder="Proposed amount"/><textarea placeholder="Message or questions"></textarea><a class="btn primary" href="mailto:${safeText(settings.contactEmail)}?subject=${encodeURIComponent(`Investor interest in ${settings.companyName}`)}&body=${encodeURIComponent('Name:\nEmail:\nPhone:\nProposed amount:\nMessage:\n')}">Email interest to owner</a></div></section>
+<section id="investor-interest" class="interest"><span class="eyebrow">Investor interest</span><h2>Begin the private review</h2><p>Submit your name, contact details, proposed interest amount, and questions. This is a non-binding indication of interest for owner review only.</p><div class="form"><input placeholder="Full name"/><input placeholder="Email"/><input placeholder="Phone"/><input placeholder="Proposed amount"/><textarea placeholder="Message or questions"></textarea><a class="btn primary" href="mailto:${safeText(settings.contactEmail)}?subject=${encodeURIComponent(`Investor interest in ${settings.companyName}`)}&body=${encodeURIComponent('Name:\nEmail:\nPhone:\nProposed amount:\nMessage:\n')}">Submit by email</a></div></section>
 <section class="notice"><strong>Important review notice</strong><p>${safeText(settings.riskNotice)}</p></section>
-<footer class="foot"><p>${safeText(settings.legalName)} · ${safeText(settings.location)}</p><p>${safeText(settings.contactEmail)} · ${safeText(settings.contactPhone)} ${settings.website ? `· ${safeText(settings.website)}` : ''}</p><p>Generated with MONIEZI Raise V1.5.</p></footer>
+<footer class="foot"><p>${safeText(settings.legalName)} · ${safeText(settings.location)}</p><p>${safeText(settings.contactEmail)} · ${safeText(settings.contactPhone)} ${settings.website ? `· ${safeText(settings.website)}` : ''}</p></footer>
 </body>
 </html>`;
 }
 
 function buildPackageText(settings: PortalSettings) {
-  return `MONIEZI RAISE V1.5 — PRIVATE INVESTOR PORTAL PACKAGE\n\nCompany: ${settings.companyName}\nLegal name: ${settings.legalName}\nFounder / Owner: ${settings.founderName}, ${settings.founderTitle}\nContact: ${settings.contactEmail} · ${settings.contactPhone}\nWebsite: ${settings.website}\nLocation: ${settings.location}\n\nFunding Goal: ${money(settings.fundingGoal)}\nMinimum Interest: ${money(settings.minimumInterest)}\nDeadline: ${formatDate(settings.deadline)}\nRound / Structure: ${settings.roundType}\n\nBUSINESS OVERVIEW\n${settings.businessOverview}\n\nINVESTOR THESIS\n${settings.investorThesis}\n\nWHY NOW\n${settings.whyNow}\n\nBUSINESS MODEL\n${settings.businessModel}\n\nPROOF / READINESS\n${settings.proofPoints}\n\nUSE OF FUNDS\n${settings.useOfFunds}\n\nMARKET OPPORTUNITY\n${settings.marketOpportunity}\n\nTERMS SUMMARY\n${settings.termsSummary}\n\nINVESTOR PROCESS\n${settings.investorProcess}\n\nAGREEMENT DOCUMENT\n${settings.agreementFileName ? `Attached / uploaded document: ${settings.agreementFileName}` : 'No agreement file uploaded yet. Investors should request the document from the owner.'}\n\nRISK NOTICE\n${settings.riskNotice}\n\nGenerated by MONIEZI Raise V1.5. This package is an organization and presentation aid, not legal, accounting, tax, investment, or securities advice.`;
+  return `PRIVATE INVESTOR PORTAL PACKAGE\n\nCompany: ${settings.companyName}\nLegal name: ${settings.legalName}\nFounder / Owner: ${settings.founderName}, ${settings.founderTitle}\nContact: ${settings.contactEmail} · ${settings.contactPhone}\nWebsite: ${settings.website}\nLocation: ${settings.location}\n\nFunding Goal: ${money(settings.fundingGoal)}\nMinimum Interest: ${money(settings.minimumInterest)}\nDeadline: ${formatDate(settings.deadline)}\nRound / Structure: ${settings.roundType}\n\nBUSINESS OVERVIEW\n${settings.businessOverview}\n\nINVESTOR THESIS\n${settings.investorThesis}\n\nWHY NOW\n${settings.whyNow}\n\nBUSINESS MODEL\n${settings.businessModel}\n\nPROOF / READINESS\n${settings.proofPoints}\n\nUSE OF FUNDS\n${settings.useOfFunds}\n\nMARKET OPPORTUNITY\n${settings.marketOpportunity}\n\nTERMS SUMMARY\n${settings.termsSummary}\n\nINVESTOR PROCESS\n${settings.investorProcess}\n\nAGREEMENT DOCUMENT\n${settings.agreementFileName ? `Attached / uploaded document: ${settings.agreementFileName}` : 'No agreement file uploaded yet. Investors should request the document from the owner.'}\n\nRISK NOTICE\n${settings.riskNotice}\n\nThis package is an organization and presentation aid, not legal, accounting, tax, investment, or securities advice.`;
 }
 
 function App() {
@@ -573,10 +573,10 @@ function App() {
         <div className="flex items-center gap-3">
           <LogoMark settings={settings} />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-lg font-black tracking-tight">MONIEZI Raise</p>
-            <p className="truncate text-xs font-black uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">V1.5 · Premium Investor Portal Builder</p>
+            <p className="truncate text-lg font-semibold tracking-tight">MONIEZI Raise</p>
+            <p className="truncate text-xs font-semibold uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">V1.5.2 · Premium Investor Portal Builder</p>
           </div>
-          <button onClick={saveStamp} className="rounded-2xl bg-slate-950 px-4 py-3 text-xs font-black text-white shadow-lg active:scale-95 dark:bg-blue-500">
+          <button onClick={saveStamp} className="rounded-2xl bg-slate-950 px-4 py-3 text-xs font-semibold text-white shadow-lg active:scale-95 dark:bg-blue-500">
             Save
           </button>
         </div>
@@ -589,7 +589,7 @@ function App() {
             <button
               key={key}
               onClick={() => setView(key)}
-              className={`rounded-2xl px-3 py-3 text-xs font-black uppercase tracking-[0.12em] transition active:scale-95 ${
+              className={`rounded-2xl px-3 py-3 text-xs font-semibold uppercase tracking-[0.12em] transition active:scale-95 ${
                 view === key ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300'
               }`}
             >
@@ -602,30 +602,30 @@ function App() {
       {view === 'build' && (
         <main className="w-full">
           <section className="w-full bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,.22),_transparent_36%),linear-gradient(180deg,#ffffff,#eff6ff)] px-5 py-8 dark:bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,.25),_transparent_36%),linear-gradient(180deg,#020617,#0f172a)] sm:px-8 lg:px-10">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">One job only</p>
-            <h1 className="mt-3 text-4xl font-black leading-none tracking-[-0.055em] sm:text-6xl">Build a premium investor portal for your business.</h1>
-            <p className="mt-5 text-base font-bold leading-8 text-slate-600 dark:text-slate-300">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">One job only</p>
+            <h1 className="mt-3 text-4xl font-semibold leading-none tracking-[-0.055em] sm:text-6xl">Build a premium investor portal for your business.</h1>
+            <p className="mt-5 text-base font-medium leading-8 text-slate-600 dark:text-slate-300">
               Fill the guided template, preview the investor-facing page, attach a fillable agreement or funding document, and export a shareable portal. This builder is for the owner’s investor portal — nothing else.
             </p>
             <div className="mt-6 rounded-[1.5rem] border border-blue-200 bg-white/80 p-4 dark:border-blue-400/20 dark:bg-white/5">
               <div className="flex items-center justify-between gap-4">
-                <span className="text-sm font-black text-slate-700 dark:text-slate-200">Portal readiness</span>
-                <span className="text-sm font-black text-blue-600 dark:text-blue-300">{visibleProgress}%</span>
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">Portal readiness</span>
+                <span className="text-sm font-semibold text-blue-600 dark:text-blue-300">{visibleProgress}%</span>
               </div>
               <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
                 <div className="h-full rounded-full bg-blue-600" style={{ width: `${visibleProgress}%` }} />
               </div>
-              {savedAt && <p className="mt-3 text-xs font-bold text-slate-500 dark:text-slate-400">Saved at {savedAt}</p>}
+              {savedAt && <p className="mt-3 text-xs font-medium text-slate-500 dark:text-slate-400">Saved at {savedAt}</p>}
             </div>
           </section>
 
-          <BuilderSection number="01" title="Choose the portal template" subtitle="Start with the type of investor portal the business owner wants to create. The buyer can change all wording after choosing a template.">
+          <BuilderSection number="01" title="Choose the portal template" subtitle="Start with the type of investor portal you want to create. You can change all wording after choosing a template.">
             <Guidance
               title="What this choice controls"
               bullets={[
                 'Use Premium Investor Portal for the broadest polished private-round page.',
-                'Use Startup / SAFE Portal when the buyer needs startup-style investor language and agreement workflow.',
-                'Use Local Business Expansion Portal when the buyer raises for equipment, vehicles, crews, materials, working capital, or growth capacity.',
+                'Use Startup / SAFE Portal for startup-style investor language and an agreement-review workflow.',
+                'Use Local Business Expansion Portal for equipment, vehicles, crews, materials, working capital, or growth capacity.',
               ]}
             />
             <div className="grid gap-4">
@@ -733,7 +733,7 @@ function App() {
               <Field label="Agreement summary"><textarea className={textAreaClass} value={settings.agreementSummary} onChange={(e) => update({ agreementSummary: e.target.value })} /></Field>
               <UploadBox
                 title="Upload agreement / SAFE / funding document"
-                subtitle="Optional but important. Upload the fillable PDF or document investors can download from the portal. For V1.5, this embeds the file in the exported HTML. Very large files should be avoided."
+                subtitle="Optional but important. Upload the fillable PDF or document investors can download from the portal. This embeds the file in the exported HTML. Very large files should be avoided."
                 accept=".pdf,.doc,.docx,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 fileName={settings.agreementFileName}
                 onFile={(file) => handleUpload(file, 'agreement')}
@@ -741,9 +741,9 @@ function App() {
               <Field label="Risk / review notice"><textarea className={textAreaClass} value={settings.riskNotice} onChange={(e) => update({ riskNotice: e.target.value })} /></Field>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <button onClick={() => setView('preview')} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-4 text-sm font-black text-white shadow-xl shadow-blue-900/20 active:scale-95"><Eye className="h-4 w-4" /> Preview investor portal</button>
-              <button onClick={exportPortal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-xl active:scale-95 dark:bg-blue-500"><Download className="h-4 w-4" /> Export portal HTML</button>
-              <button onClick={exportProfile} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-950 shadow-xl active:scale-95 dark:border-white/10 dark:bg-slate-900 dark:text-white"><Save className="h-4 w-4" /> Export builder profile</button>
+              <button onClick={() => setView('preview')} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-4 text-sm font-semibold text-white shadow-xl shadow-blue-900/20 active:scale-95"><Eye className="h-4 w-4" /> Preview investor portal</button>
+              <button onClick={exportPortal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-semibold text-white shadow-xl active:scale-95 dark:bg-blue-500"><Download className="h-4 w-4" /> Export portal HTML</button>
+              <button onClick={exportProfile} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-semibold text-slate-950 shadow-xl active:scale-95 dark:border-white/10 dark:bg-slate-900 dark:text-white"><Save className="h-4 w-4" /> Export builder profile</button>
             </div>
           </BuilderSection>
         </main>
@@ -752,11 +752,11 @@ function App() {
       {view === 'preview' && (
         <main className="w-full">
           <section className="w-full border-b border-slate-200 bg-white px-5 py-5 dark:border-white/10 dark:bg-slate-900 sm:px-8 lg:px-10">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">Investor-facing output</p>
-            <h1 className="mt-2 text-3xl font-black tracking-[-0.04em]">Preview the portal your buyer will share.</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">Portal preview</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em]">Preview the investor portal.</h1>
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <button onClick={() => setView('build')} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-950 shadow-lg active:scale-95 dark:border-white/10 dark:bg-slate-950 dark:text-white"><PenLine className="h-4 w-4" /> Edit builder</button>
-              <button onClick={exportPortal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-900/20 active:scale-95"><Download className="h-4 w-4" /> Export portal</button>
+              <button onClick={() => setView('build')} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg active:scale-95 dark:border-white/10 dark:bg-slate-950 dark:text-white"><PenLine className="h-4 w-4" /> Edit builder</button>
+              <button onClick={exportPortal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 active:scale-95"><Download className="h-4 w-4" /> Export portal</button>
             </div>
           </section>
           <InvestorPortal settings={settings} />
@@ -766,18 +766,18 @@ function App() {
       {view === 'export' && (
         <main className="w-full">
           <section className="w-full bg-white px-5 py-8 dark:bg-slate-900 sm:px-8 lg:px-10">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">Export center</p>
-            <h1 className="mt-3 text-4xl font-black leading-none tracking-[-0.055em] sm:text-5xl">Download the buyer’s investor portal materials.</h1>
-            <p className="mt-5 text-base font-bold leading-8 text-slate-600 dark:text-slate-300">
-              V1.5 exports the investor-facing portal as a single static HTML file. It also exports the builder profile and a text funding package. If an agreement file was uploaded, the exported portal includes a download button for that document.
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">Export center</p>
+            <h1 className="mt-3 text-4xl font-semibold leading-none tracking-[-0.055em] sm:text-5xl">Download investor portal materials.</h1>
+            <p className="mt-5 text-base font-medium leading-8 text-slate-600 dark:text-slate-300">
+              This version exports the investor-facing portal as a single static HTML file. It also exports the builder profile and a text funding package. If an agreement file was uploaded, the exported portal includes a download button for that document.
             </p>
             <div className="mt-8 grid gap-4">
-              <button onClick={exportPortal} className="flex items-center justify-between gap-4 rounded-[2rem] bg-blue-600 p-5 text-left text-white shadow-xl shadow-blue-900/20 active:scale-[0.99]"><span><strong className="block text-xl">Export investor portal HTML</strong><span className="mt-1 block text-sm font-bold text-blue-100">The finished page the business owner can upload or share.</span></span><Download className="h-6 w-6" /></button>
-              <button onClick={exportPackage} className="flex items-center justify-between gap-4 rounded-[2rem] border border-slate-200 bg-white p-5 text-left text-slate-950 shadow-xl shadow-slate-200/70 active:scale-[0.99] dark:border-white/10 dark:bg-slate-950 dark:text-white dark:shadow-black/20"><span><strong className="block text-xl">Download funding package text</strong><span className="mt-1 block text-sm font-bold text-slate-500 dark:text-slate-300">A clean internal package summary from the builder content.</span></span><FileText className="h-6 w-6" /></button>
-              <button onClick={exportProfile} className="flex items-center justify-between gap-4 rounded-[2rem] border border-slate-200 bg-white p-5 text-left text-slate-950 shadow-xl shadow-slate-200/70 active:scale-[0.99] dark:border-white/10 dark:bg-slate-950 dark:text-white dark:shadow-black/20"><span><strong className="block text-xl">Export builder profile JSON</strong><span className="mt-1 block text-sm font-bold text-slate-500 dark:text-slate-300">Save or move the owner’s portal settings.</span></span><ClipboardList className="h-6 w-6" /></button>
+              <button onClick={exportPortal} className="flex items-center justify-between gap-4 rounded-[2rem] bg-blue-600 p-5 text-left text-white shadow-xl shadow-blue-900/20 active:scale-[0.99]"><span><strong className="block text-xl">Export investor portal HTML</strong><span className="mt-1 block text-sm font-medium text-blue-100">The finished investor portal page you can upload or share.</span></span><Download className="h-6 w-6" /></button>
+              <button onClick={exportPackage} className="flex items-center justify-between gap-4 rounded-[2rem] border border-slate-200 bg-white p-5 text-left text-slate-950 shadow-xl shadow-slate-200/70 active:scale-[0.99] dark:border-white/10 dark:bg-slate-950 dark:text-white dark:shadow-black/20"><span><strong className="block text-xl">Download funding package text</strong><span className="mt-1 block text-sm font-medium text-slate-500 dark:text-slate-300">A clean internal package summary from the builder content.</span></span><FileText className="h-6 w-6" /></button>
+              <button onClick={exportProfile} className="flex items-center justify-between gap-4 rounded-[2rem] border border-slate-200 bg-white p-5 text-left text-slate-950 shadow-xl shadow-slate-200/70 active:scale-[0.99] dark:border-white/10 dark:bg-slate-950 dark:text-white dark:shadow-black/20"><span><strong className="block text-xl">Export builder profile JSON</strong><span className="mt-1 block text-sm font-medium text-slate-500 dark:text-slate-300">Save or move the owner’s portal settings.</span></span><ClipboardList className="h-6 w-6" /></button>
               {settings.agreementDataUrl && (
                 <a href={settings.agreementDataUrl} download={settings.agreementFileName || 'investor-agreement'} className="flex items-center justify-between gap-4 rounded-[2rem] border border-slate-200 bg-white p-5 text-left text-slate-950 shadow-xl shadow-slate-200/70 active:scale-[0.99] dark:border-white/10 dark:bg-slate-950 dark:text-white dark:shadow-black/20">
-                  <span><strong className="block text-xl">Download uploaded agreement</strong><span className="mt-1 block text-sm font-bold text-slate-500 dark:text-slate-300">{settings.agreementFileName}</span></span><Download className="h-6 w-6" />
+                  <span><strong className="block text-xl">Download uploaded agreement</strong><span className="mt-1 block text-sm font-medium text-slate-500 dark:text-slate-300">{settings.agreementFileName}</span></span><Download className="h-6 w-6" />
                 </a>
               )}
             </div>

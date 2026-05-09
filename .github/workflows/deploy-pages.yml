@@ -1,6 +1,6 @@
-# package marker: moniezi-raise-v1-5 premium investor portal builder
+# package marker: moniezi-raise-v1-5-2 premium typography polish
 name: Deploy Vite app to GitHub Pages
-# package-revision: moniezi-raise-v1-5
+# package-revision: moniezi-raise-v1-5-2
 
 on:
   push:

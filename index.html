@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
 
+    <!-- Premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
+
     <!-- PWA -->
     <link rel="manifest" href="manifest.webmanifest" />
     <meta name="theme-color" content="#081226" />
@@ -61,7 +66,7 @@
 
 
       #app-loader .brand {
-        font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
         font-weight: 800;
         letter-spacing: 0.38em;
         font-size: 18px;
@@ -69,7 +74,7 @@
       }
 
       #app-loader .sub {
-        font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.26em;
@@ -78,7 +83,7 @@
       }
 
       #app-loader .hint {
-        font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
         font-weight: 600;
         font-size: 12px;
         opacity: 0.65;
@@ -100,7 +105,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="MONIEZI Raise" />
 
-    <title>MONIEZI Raise V1.5</title>
+    <title>MONIEZI Raise V1.5.2</title>
 
     <style>
       /* ========================================
@@ -204,7 +209,7 @@
       
       /* Ensure Inter font is used everywhere */
       * {
-        font-family: "Inter", system-ui, -apple-system, sans-serif !important;
+        font-family: "Manrope", system-ui, -apple-system, sans-serif !important;
       }
       
       /* LIGHT THEME: Global text color override - make EVERYTHING dark */
@@ -271,7 +276,7 @@
       }
 
       body {
-        font-family: "Inter", system-ui, -apple-system, sans-serif;
+        font-family: "Manrope", system-ui, -apple-system, sans-serif;
         -webkit-tap-highlight-color: transparent;
         /* Cross-browser font rendering consistency */
         -webkit-font-smoothing: antialiased;
@@ -369,7 +374,7 @@
       }
 
       input[type="date"] {
-        font-family: "Inter", system-ui, -apple-system, sans-serif;
+        font-family: "Manrope", system-ui, -apple-system, sans-serif;
       }
       .dark input[type="date"] {
         color-scheme: dark;
@@ -467,6 +472,55 @@
       .firefox .text-3xl { font-size: 30px !important; }
       .firefox .text-4xl { font-size: 36px !important; }
       .firefox .text-5xl { font-size: 48px !important; }
+
+
+      /* V1.5.2 premium typography system: modern, lighter, less blocky */
+      :root {
+        --moniezi-ui-font: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --moniezi-display-font: "Sora", "Manrope", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      html, body, #root, button, input, textarea, select {
+        font-family: var(--moniezi-ui-font) !important;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      h1, h2, h3, h4, .font-brand {
+        font-family: var(--moniezi-display-font) !important;
+        font-weight: 600 !important;
+        letter-spacing: -0.045em;
+      }
+      .font-black, .font-extrabold {
+        font-weight: 650 !important;
+      }
+      .font-bold {
+        font-weight: 560 !important;
+      }
+      .font-semibold {
+        font-weight: 600 !important;
+      }
+      .font-medium {
+        font-weight: 500 !important;
+      }
+      p, li, input, textarea, select {
+        font-weight: 500 !important;
+      }
+      .tracking-\[0\.18em\], .tracking-\[0\.16em\] {
+        letter-spacing: 0.13em !important;
+      }
+      html.theme-light h1,
+      html.theme-light h2,
+      html.theme-light h3,
+      html.theme-light h4,
+      html.theme-light h5,
+      html.theme-light h6 {
+        font-family: var(--moniezi-display-font) !important;
+        font-weight: 600 !important;
+      }
+      html.theme-light .font-bold,
+      html.theme-light .font-extrabold,
+      html.theme-light .font-black {
+        font-weight: 600 !important;
+      }
     </style>
   </head>
 

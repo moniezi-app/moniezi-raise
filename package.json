@@ -1,8 +1,8 @@
 {
   "name": "moniezi-raise-v1",
   "private": true,
-  "version": "1.5.0",
-  "description": "MONIEZI Raise V1.5 premium investor portal builder focused on guided templates, mobile-first full-width preview, agreement upload, and static portal export",
+  "version": "1.5.2",
+  "description": "MONIEZI Raise V1.5.2 premium investor portal builder with modern typography, lighter font weights, and polished investor-page visual hierarchy",
   "type": "module",
   "scripts": {
     "dev": "vite",
