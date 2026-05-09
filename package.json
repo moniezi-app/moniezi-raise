@@ -1,8 +1,8 @@
 {
   "name": "moniezi-raise-v1",
   "private": true,
-  "version": "1.3.0",
-  "description": "MONIEZI Raise V1.3 investor portal builder for startup and local business private funding pages",
+  "version": "1.3.1",
+  "description": "MONIEZI Raise V1.3.1 full investor portal builder with EMYRGEN-style template, richer preview, and static portal export",
   "type": "module",
   "scripts": {
     "dev": "vite",

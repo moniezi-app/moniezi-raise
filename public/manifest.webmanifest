@@ -1,7 +1,7 @@
 {
   "name": "MONIEZI Raise",
   "short_name": "Raise",
-  "description": "MONIEZI Raise \u2014 private funding page, supporter signup, and investor package workflow.",
+  "description": "MONIEZI Raise \u2014 full private investor portal builder, supporter signup, and investor package workflow.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
