@@ -72,7 +72,7 @@ interface PortalSettings {
   agreementDataUrl: string;
 }
 
-const STORAGE_KEY = 'moniezi-raise-v1-5-4-section-video-builder-state';
+const STORAGE_KEY = 'moniezi-raise-v1-5-5-premium-section-builder-state';
 
 const baseTemplate: PortalSettings = {
   templateKey: 'premium',
@@ -313,13 +313,13 @@ function LogoMark({ settings, large = false }: { settings: PortalSettings; large
 
 function Guidance({ title, bullets }: { title: string; bullets: string[] }) {
   return (
-    <div className="rounded-[1.75rem] border border-blue-200/80 bg-blue-50/80 p-5 shadow-sm dark:border-blue-400/20 dark:bg-blue-500/10">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-200">Builder guidance</p>
-      <h4 className="mt-2 text-lg font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h4>
-      <ul className="mt-4 grid gap-3 text-sm font-medium leading-9 text-slate-700 dark:text-slate-200">
+    <div className="overflow-hidden rounded-[2rem] border border-blue-200/70 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,.24),_transparent_38%),linear-gradient(135deg,#eff6ff,#ffffff)] p-5 shadow-xl shadow-blue-950/10 dark:border-blue-300/20 dark:bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,.34),_transparent_40%),linear-gradient(135deg,#0f172a,#020617)] dark:shadow-black/30">
+      <p className="inline-flex rounded-full border border-blue-300/60 bg-white/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] text-blue-700 dark:border-blue-300/20 dark:bg-blue-300/10 dark:text-blue-100">Builder guidance</p>
+      <h4 className="mt-4 text-xl font-semibold leading-[1.32] tracking-[-0.035em] text-slate-950 dark:text-white">{title}</h4>
+      <ul className="mt-5 grid gap-4 text-sm font-medium leading-[2.05] text-slate-700 dark:text-slate-200">
         {bullets.map((bullet) => (
           <li key={bullet} className="flex gap-3">
-            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-300" />
+            <CheckCircle2 className="mt-1.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-300" />
             <span>{bullet}</span>
           </li>
         ))}
@@ -330,28 +330,32 @@ function Guidance({ title, bullets }: { title: string; bullets: string[] }) {
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
-    <label className="block">
-      <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-slate-600 dark:text-slate-300">{label}</span>
-      {hint && <span className="mt-2 block text-sm font-medium leading-9 text-slate-500 dark:text-slate-400">{hint}</span>}
-      <div className="mt-3">{children}</div>
+    <label className="block rounded-[2rem] border border-slate-200/90 bg-white p-5 shadow-xl shadow-slate-200/70 dark:border-white/10 dark:bg-slate-950/70 dark:shadow-black/25">
+      <span className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] text-blue-700 dark:border-blue-300/20 dark:bg-blue-400/10 dark:text-blue-200">{label}</span>
+      {hint && <span className="mt-4 block text-sm font-medium leading-[2.05] text-slate-600 dark:text-slate-300">{hint}</span>}
+      <div className="mt-4">{children}</div>
     </label>
   );
 }
 
 function BuilderSection({ number, title, subtitle, children }: { number: string; title: string; subtitle: string; children: React.ReactNode }) {
   return (
-    <section className="w-full border-y border-slate-200 bg-white px-5 py-8 dark:border-white/10 dark:bg-slate-900/80 sm:px-8 lg:px-10">
-      <div className="mb-7 flex items-start gap-4">
-        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-slate-950 text-sm font-semibold text-white shadow-xl shadow-slate-950/15 dark:bg-blue-500">
-          {number}
-        </div>
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">Portal builder</p>
-          <h2 className="mt-2 text-3xl font-semibold leading-none tracking-[-0.04em] text-slate-950 dark:text-white sm:text-4xl">{title}</h2>
-          <p className="mt-3 text-base font-medium leading-9 text-slate-600 dark:text-slate-300">{subtitle}</p>
+    <section className="w-full overflow-hidden border-y border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-slate-950">
+      <div className="w-full bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,.34),_transparent_42%),linear-gradient(135deg,#020617_0%,#0f172a_58%,#1e3a8a_100%)] px-5 py-9 text-white sm:px-8 lg:px-10">
+        <div className="flex items-start gap-4">
+          <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-blue-200/30 bg-white/10 text-sm font-semibold text-blue-50 shadow-2xl shadow-blue-950/30 backdrop-blur">
+            {number}
+          </div>
+          <div className="min-w-0">
+            <p className="inline-flex rounded-full border border-blue-200/25 bg-blue-300/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] text-blue-100">Portal builder</p>
+            <h2 className="mt-4 text-3xl font-semibold leading-[1.22] tracking-[-0.045em] text-white sm:text-4xl">{title}</h2>
+            <p className="mt-4 text-base font-medium leading-[2.05] text-slate-200">{subtitle}</p>
+          </div>
         </div>
       </div>
-      <div className="grid gap-7">{children}</div>
+      <div className="w-full bg-[linear-gradient(180deg,#f8fafc,#eef4ff)] px-5 py-8 dark:bg-[linear-gradient(180deg,#020617,#0f172a)] sm:px-8 lg:px-10">
+        <div className="grid gap-8">{children}</div>
+      </div>
     </section>
   );
 }
@@ -381,25 +385,25 @@ function TemplateButton({ template, active, onClick }: { template: (typeof templ
 }
 
 const inputClass =
-  'w-full rounded-[1.35rem] border border-slate-200 bg-white px-4 py-4 text-base font-medium text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-white/10 dark:bg-slate-950/70 dark:text-white dark:focus:ring-blue-500/20';
-const textAreaClass = `${inputClass} min-h-44 leading-9`;
+  'w-full rounded-[1.45rem] border border-slate-200 bg-white/95 px-4 py-4 text-base font-medium leading-[1.7] text-slate-950 shadow-inner shadow-slate-200/50 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-white/10 dark:bg-slate-900/90 dark:text-white dark:shadow-black/20 dark:focus:ring-blue-500/20';
+const textAreaClass = `${inputClass} min-h-48 leading-[2.05]`;
 
 function UploadBox({ title, subtitle, fileName, accept, onFile }: { title: string; subtitle: string; fileName?: string; accept: string; onFile: (file: File) => void }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   return (
-    <div className="rounded-[2rem] border border-dashed border-slate-300 bg-slate-50 p-5 dark:border-white/15 dark:bg-slate-950/50">
+    <div className="rounded-[2rem] border border-dashed border-blue-300/80 bg-[linear-gradient(135deg,#f8fafc,#eff6ff)] p-5 shadow-xl shadow-blue-950/10 dark:border-blue-300/20 dark:bg-[linear-gradient(135deg,#0f172a,#020617)] dark:shadow-black/25">
       <div className="flex items-start gap-4">
-        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white text-blue-600 shadow-sm dark:bg-white/10 dark:text-blue-200">
+        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-900/25 dark:bg-blue-500 dark:text-white">
           <Upload className="h-6 w-6" />
         </div>
         <div className="min-w-0 flex-1">
-          <h4 className="text-lg font-semibold text-slate-950 dark:text-white">{title}</h4>
-          <p className="mt-2 text-sm font-medium leading-9 text-slate-600 dark:text-slate-300">{subtitle}</p>
+          <h4 className="text-xl font-semibold leading-[1.35] tracking-[-0.035em] text-slate-950 dark:text-white">{title}</h4>
+          <p className="mt-3 text-sm font-medium leading-[2.05] text-slate-600 dark:text-slate-300">{subtitle}</p>
           {fileName && <p className="mt-3 rounded-xl bg-white px-3 py-2 text-sm font-semibold text-slate-700 dark:bg-white/10 dark:text-slate-100">Selected: {fileName}</p>}
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="mt-4 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg active:scale-95 dark:bg-blue-500"
+            className="mt-5 rounded-2xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 active:scale-95 dark:bg-blue-500"
           >
             Choose file
           </button>
@@ -437,20 +441,20 @@ function ImageUploadGroup({
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   return (
-    <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/70 dark:border-white/10 dark:bg-slate-950/60 dark:shadow-black/20">
+    <div className="rounded-[2rem] border border-blue-100 bg-[linear-gradient(135deg,#ffffff,#eff6ff)] p-5 shadow-xl shadow-blue-950/10 dark:border-blue-300/15 dark:bg-[linear-gradient(135deg,#0f172a,#020617)] dark:shadow-black/25">
       <div className="flex items-start gap-4">
-        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-200">
+        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-900/20 dark:bg-blue-500">
           <Images className="h-6 w-6" />
         </div>
         <div className="min-w-0 flex-1">
-          <h4 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h4>
-          <p className="mt-3 text-sm font-medium leading-9 text-slate-600 dark:text-slate-300">{subtitle}</p>
+          <h4 className="text-xl font-semibold leading-[1.35] tracking-[-0.035em] text-slate-950 dark:text-white">{title}</h4>
+          <p className="mt-4 text-sm font-medium leading-[2.05] text-slate-600 dark:text-slate-300">{subtitle}</p>
           <p className="mt-3 text-xs font-semibold uppercase tracking-[0.13em] text-blue-600 dark:text-blue-300">{images.length}/{imageCollectionMax} images selected</p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 active:scale-95"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 active:scale-95"
             >
               <Upload className="h-4 w-4" /> Add images
             </button>
@@ -516,20 +520,20 @@ function VideoUploadGroup({
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   return (
-    <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/70 dark:border-white/10 dark:bg-slate-950/60 dark:shadow-black/20">
+    <div className="rounded-[2rem] border border-blue-100 bg-[linear-gradient(135deg,#ffffff,#eff6ff)] p-5 shadow-xl shadow-blue-950/10 dark:border-blue-300/15 dark:bg-[linear-gradient(135deg,#0f172a,#020617)] dark:shadow-black/25">
       <div className="flex items-start gap-4">
-        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-200">
+        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-900/20 dark:bg-indigo-500">
           <Video className="h-6 w-6" />
         </div>
         <div className="min-w-0 flex-1">
-          <h4 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h4>
-          <p className="mt-3 text-sm font-medium leading-9 text-slate-600 dark:text-slate-300">{subtitle}</p>
+          <h4 className="text-xl font-semibold leading-[1.35] tracking-[-0.035em] text-slate-950 dark:text-white">{title}</h4>
+          <p className="mt-4 text-sm font-medium leading-[2.05] text-slate-600 dark:text-slate-300">{subtitle}</p>
           <p className="mt-3 text-xs font-semibold uppercase tracking-[0.13em] text-indigo-600 dark:text-indigo-300">{videos.length}/{videoCollectionMax} videos selected</p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-900/20 active:scale-95"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-900/20 active:scale-95"
             >
               <Upload className="h-4 w-4" /> Add videos
             </button>
@@ -624,10 +628,10 @@ function buildVideoGalleryHtml(videos: string[], label: string) {
 
 function PortalCard({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
   return (
-    <article className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/70 dark:border-white/10 dark:bg-white/5 dark:shadow-black/20">
+    <article className="rounded-[2rem] border border-blue-100 bg-[linear-gradient(135deg,#ffffff,#f8fbff)] p-5 shadow-xl shadow-blue-950/10 dark:border-white/10 dark:bg-white/5 dark:shadow-black/20">
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">{eyebrow}</p>
-      <h3 className="mt-3 text-2xl font-semibold leading-tight tracking-[-0.035em] text-slate-950 dark:text-white">{title}</h3>
-      <p className="mt-4 text-base font-medium leading-9 text-slate-600 dark:text-slate-200">{body}</p>
+      <h3 className="mt-4 text-2xl font-semibold leading-[1.35] tracking-[-0.035em] text-slate-950 dark:text-white">{title}</h3>
+      <p className="mt-5 text-base font-medium leading-[2.05] text-slate-600 dark:text-slate-200">{body}</p>
     </article>
   );
 }
@@ -643,10 +647,10 @@ function Metric({ label, value }: { label: string; value: string }) {
 
 function PortalSection({ eyebrow, title, body, children }: { eyebrow: string; title: string; body: string; children?: React.ReactNode }) {
   return (
-    <section className="w-full border-y border-slate-200 bg-white px-5 py-9 dark:border-white/10 dark:bg-slate-900 sm:px-8 lg:px-10">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">{eyebrow}</p>
-      <h2 className="mt-3 text-4xl font-semibold leading-none tracking-[-0.055em] text-slate-950 dark:text-white sm:text-5xl">{title}</h2>
-      <p className="mt-5 text-base font-medium leading-9 text-slate-600 dark:text-slate-200">{body}</p>
+    <section className="w-full border-y border-slate-200 bg-[linear-gradient(180deg,#ffffff,#f8fafc)] px-5 py-11 dark:border-white/10 dark:bg-slate-900 sm:px-8 lg:px-10">
+      <p className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] text-blue-700 dark:border-blue-300/20 dark:bg-blue-400/10 dark:text-blue-200">{eyebrow}</p>
+      <h2 className="mt-5 text-4xl font-semibold leading-[1.18] tracking-[-0.055em] text-slate-950 dark:text-white sm:text-5xl">{title}</h2>
+      <p className="mt-6 text-base font-medium leading-[2.05] text-slate-600 dark:text-slate-200">{body}</p>
       {children && <div className="mt-7">{children}</div>}
     </section>
   );
@@ -668,8 +672,8 @@ function InvestorPortal({ settings, standalone = false }: { settings: PortalSett
       <section className="relative w-full overflow-hidden border-b border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,.40),_transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_54%,#172554_100%)] px-5 py-10 sm:px-8 lg:px-10">
         {settings.heroImageDataUrl && <img src={settings.heroImageDataUrl} alt="Company visual" className="mb-7 h-56 w-full rounded-[2rem] object-cover shadow-2xl shadow-black/30" />}
         <p className="inline-flex rounded-full border border-blue-300/25 bg-blue-300/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-blue-100">{settings.portalEyebrow}</p>
-        <h1 className="mt-5 text-5xl font-semibold leading-[0.92] tracking-[-0.07em] sm:text-7xl lg:text-8xl">{settings.headline}</h1>
-        <p className="mt-6 text-lg font-medium leading-9 text-slate-200 sm:text-xl">{settings.subheadline}</p>
+        <h1 className="mt-6 text-5xl font-semibold leading-[1.12] tracking-[-0.065em] sm:text-7xl lg:text-8xl">{settings.headline}</h1>
+        <p className="mt-7 text-lg font-medium leading-[2.05] text-slate-200 sm:text-xl">{settings.subheadline}</p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <a href="#investor-interest" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-4 text-sm font-semibold text-white shadow-2xl shadow-blue-950/30">
             {settings.primaryCta} <ArrowRight className="h-4 w-4" />
@@ -721,10 +725,10 @@ function InvestorPortal({ settings, standalone = false }: { settings: PortalSett
         <PortalCard eyebrow="Process" title="From interest to approved participation" body={settings.investorProcess} />
       </PortalSection>
 
-      <section id="investor-interest" className="w-full border-y border-white/10 bg-slate-950 px-5 py-10 sm:px-8 lg:px-10">
+      <section id="investor-interest" className="w-full border-y border-white/10 bg-slate-950 px-5 py-12 sm:px-8 lg:px-10">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">Investor interest</p>
-        <h2 className="mt-3 text-4xl font-semibold leading-none tracking-[-0.055em] text-white sm:text-5xl">Begin the private review</h2>
-        <p className="mt-5 text-base font-medium leading-9 text-slate-300">
+        <h2 className="mt-5 text-4xl font-semibold leading-[1.18] tracking-[-0.055em] text-white sm:text-5xl">Begin the private review</h2>
+        <p className="mt-6 text-base font-medium leading-[2.05] text-slate-300">
           Submit your name, contact details, proposed interest amount, and questions. This is a non-binding indication of interest for owner review only.
         </p>
         <form className="mt-7 grid gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-5">
@@ -739,12 +743,12 @@ function InvestorPortal({ settings, standalone = false }: { settings: PortalSett
         </form>
       </section>
 
-      <section className="w-full bg-amber-50 px-5 py-7 text-amber-950 sm:px-8 lg:px-10">
+      <section className="w-full bg-amber-50 px-5 py-9 text-amber-950 sm:px-8 lg:px-10">
         <p className="text-xs font-semibold uppercase tracking-[0.18em]">Important review notice</p>
-        <p className="mt-3 text-sm font-medium leading-9">{settings.riskNotice}</p>
+        <p className="mt-4 text-sm font-medium leading-[2.05]">{settings.riskNotice}</p>
       </section>
 
-      <footer className="w-full bg-slate-950 px-5 py-7 text-sm font-medium leading-9 text-slate-400 sm:px-8 lg:px-10">
+      <footer className="w-full bg-slate-950 px-5 py-8 text-sm font-medium leading-[2.05] text-slate-400 sm:px-8 lg:px-10">
         <p>{settings.legalName} · {settings.location}</p>
         <p>{settings.contactEmail} · {settings.contactPhone} {settings.website ? `· ${settings.website}` : ''}</p>
       </footer>
@@ -887,7 +891,7 @@ function App() {
           <LogoMark settings={settings} />
           <div className="min-w-0 flex-1">
             <p className="truncate text-lg font-semibold tracking-tight">MONIEZI Raise</p>
-            <p className="truncate text-xs font-semibold uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">V1.5.4 · Image + Video Portal Builder</p>
+            <p className="truncate text-xs font-semibold uppercase tracking-[0.16em] text-blue-600 dark:text-blue-300">V1.5.5 · Premium Section Builder</p>
           </div>
           <button onClick={saveStamp} className="rounded-2xl bg-slate-950 px-4 py-3 text-xs font-semibold text-white shadow-lg active:scale-95 dark:bg-blue-500">
             Save
@@ -916,8 +920,8 @@ function App() {
         <main className="w-full">
           <section className="w-full bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,.22),_transparent_36%),linear-gradient(180deg,#ffffff,#eff6ff)] px-5 py-8 dark:bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,.25),_transparent_36%),linear-gradient(180deg,#020617,#0f172a)] sm:px-8 lg:px-10">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">One job only</p>
-            <h1 className="mt-3 text-4xl font-semibold leading-none tracking-[-0.055em] sm:text-6xl">Build a premium investor portal for your business.</h1>
-            <p className="mt-5 text-base font-medium leading-9 text-slate-600 dark:text-slate-300">
+            <h1 className="mt-4 text-4xl font-semibold leading-[1.18] tracking-[-0.055em] sm:text-6xl">Build a premium investor portal for your business.</h1>
+            <p className="mt-6 text-base font-medium leading-[2.05] text-slate-600 dark:text-slate-300">
               Fill the guided template, preview the investor-facing page, attach a fillable agreement or funding document, and export a shareable portal. This builder is for the owner’s investor portal — nothing else.
             </p>
             <div className="mt-6 rounded-[1.5rem] border border-blue-200 bg-white/80 p-4 dark:border-blue-400/20 dark:bg-white/5">
@@ -1164,7 +1168,7 @@ function App() {
             <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em]">Preview the investor portal.</h1>
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <button onClick={() => setView('build')} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg active:scale-95 dark:border-white/10 dark:bg-slate-950 dark:text-white"><PenLine className="h-4 w-4" /> Edit builder</button>
-              <button onClick={exportPortal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 active:scale-95"><Download className="h-4 w-4" /> Export portal</button>
+              <button onClick={exportPortal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 active:scale-95"><Download className="h-4 w-4" /> Export portal</button>
             </div>
           </section>
           <InvestorPortal settings={settings} />
@@ -1175,8 +1179,8 @@ function App() {
         <main className="w-full">
           <section className="w-full bg-white px-5 py-8 dark:bg-slate-900 sm:px-8 lg:px-10">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-300">Export center</p>
-            <h1 className="mt-3 text-4xl font-semibold leading-none tracking-[-0.055em] sm:text-5xl">Download investor portal materials.</h1>
-            <p className="mt-5 text-base font-medium leading-9 text-slate-600 dark:text-slate-300">
+            <h1 className="mt-4 text-4xl font-semibold leading-[1.18] tracking-[-0.055em] sm:text-5xl">Download investor portal materials.</h1>
+            <p className="mt-6 text-base font-medium leading-[2.05] text-slate-600 dark:text-slate-300">
               This version exports the investor-facing portal as a single static HTML file. It also exports the builder profile and a text funding package. If an agreement file was uploaded, the exported portal includes a download button for that document.
             </p>
             <div className="mt-8 grid gap-4">

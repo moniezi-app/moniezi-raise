@@ -4,10 +4,10 @@
 */
 
 // Bump this on every deploy
-// MONIEZI Raise V1.5.4: section-level image and video uploads for richer investor portals.
+// MONIEZI Raise V1.5.5: premium spacing and builder section hierarchy.
 // The previous "no precache" change prevented the app shell from being available
 // when offline at cold start.
-const CACHE_VERSION = "moniezi-raise-v1-5-4-section-video-builder-2026-05-09";
+const CACHE_VERSION = "moniezi-raise-v1-5-5-premium-section-builder-2026-05-09";
 const CACHE_NAME = `moniezi-cache-${CACHE_VERSION}`;
 
 // Resolve an asset relative to the service worker scope
